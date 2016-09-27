@@ -138,6 +138,9 @@ class Service(pykube.objects.Service):
             'metadata': {
                 'name': name,
                 'namespace': project_name,
+                'labels': {
+                    'app': name,
+                }
             },
             'spec': {
                 'ports': [],
@@ -159,6 +162,10 @@ class Service(pykube.objects.Service):
 
         return cls(api, doc)
 
+    @property
+    def ports(self):
+        return self.obj['spec']['ports']
+
 
 class Route(OpenShiftNamespacedAPIObject):
     endpoint = 'routes'
@@ -172,6 +179,9 @@ class Route(OpenShiftNamespacedAPIObject):
             'metadata': {
                 'name': name,
                 'namespace': project_name,
+                'labels': {
+                    'app': service_name
+                }
             },
             'spec': {
                 'port': {

@@ -1,0 +1,248 @@
+Deployment Config (python)
+
+{
+    "apiVersion": "v1",
+    "kind": "DeploymentConfig",
+    "metadata": {
+        "annotations": {
+            "openshift.io/generated-by": "OpenShiftNewApp"
+        },
+        "creationTimestamp": null,
+        "labels": {
+            "app": "python"
+        },
+        "name": "python"
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "app": "python",
+            "deploymentconfig": "python"
+        },
+        "strategy": {
+            "resources": {}
+        },
+        "template": {
+            "metadata": {
+                "annotations": {
+                    "openshift.io/container.python.image.entrypoint": "[\"container-entrypoint\",\"/bin/sh\",\"-c\",\"$STI_SCRIPTS_PATH/usage\"]",
+                    "openshift.io/generated-by": "OpenShiftNewApp"
+                },
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "python",
+                    "deploymentconfig": "python"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "172.30.170.64:5000/openshift/python:3.5",
+                        "name": "python",
+                        "ports": [
+                            {
+                                "containerPort": 8080,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "resources": {}
+                    }
+                ]
+            }
+        },
+        "test": false,
+        "triggers": [
+            {
+                "type": "ConfigChange"
+            },
+            {
+                "imageChangeParams": {
+                    "automatic": true,
+                    "containerNames": [
+                        "python"
+                    ],
+                    "from": {
+                        "kind": "ImageStreamTag",
+                        "name": "python:3.5",
+                        "namespace": "openshift"
+                    }
+                },
+                "type": "ImageChange"
+            }
+        ]
+    },
+    "status": {}
+}
+
+===============================================================================
+
+Deployment Config (guestbook)
+https://10.2.2.2:8443/oapi/v1/namespaces/test-1/deploymentconfigs
+
+{
+    "apiVersion": "v1",
+    "kind": "DeploymentConfig",
+    "metadata": {
+        "annotations": {
+            "openshift.io/generated-by": "OpenShiftNewApp"
+        },
+        "creationTimestamp": null,
+        "labels": {
+            "app": "guestbook"
+        },
+        "name": "guestbook"
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "app": "guestbook",
+            "deploymentconfig": "guestbook"
+        },
+        "strategy": {
+            "resources": {}
+        },
+        "template": {
+            "metadata": {
+                "annotations": {
+                    "openshift.io/container.guestbook.image.entrypoint": "[\"./guestbook\"]",
+                    "openshift.io/generated-by": "OpenShiftNewApp"
+                },
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "guestbook",
+                    "deploymentconfig": "guestbook"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "kubernetes/guestbooko",
+                        "name": "guestbook",
+                        "ports": [
+                            {
+                                "containerPort": 3000,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "resources": {}
+                    }
+                ]
+            }
+        },
+        "test": false,
+        "triggers": [
+            {
+                "type": "ConfigChange"
+            },
+            {
+                "imageChangeParams": {
+                    "automatic": true,
+                    "containerNames": [
+                        "guestbook"
+                    ],
+                    "from": {
+                        "kind": "ImageStreamTag",
+                        "name": "guestbook:latest"
+                    }
+                },
+                "type": "ImageChange"
+            }
+        ]
+    },
+    "status": {}
+}
+
+===============================================================================
+
+Service
+https://10.2.2.2:8443/api/v1/namespaces/test-1/services
+
+{
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+        "annotations": {
+            "openshift.io/generated-by": "OpenShiftNewApp"
+        },
+        "creationTimestamp": null,
+        "labels": {
+            "app": "python"
+        },
+        "name": "python"
+    },
+    "spec": {
+        "ports": [
+            {
+                "name": "8080-tcp",
+                "port": 8080,
+                "protocol": "TCP",
+                "targetPort": 8080
+            }
+        ],
+        "selector": {
+            "app": "python",
+            "deploymentconfig": "python"
+        }
+    },
+    "status": {
+        "loadBalancer": {}
+    }
+}
+
+===============================================================================
+
+Route
+https://10.2.2.2:8443/oapi/v1/namespaces/pktest1/routes
+
+{
+    "apiVersion": "v1",
+    "kind": "Route",
+    "metadata": {
+        "creationTimestamp": null,
+        "name": "my-service"
+    },
+    "spec": {
+        "host": "",
+        "port": {
+            "targetPort": "3000-tcp"
+        },
+        "to": {
+            "kind": "",
+            "name": "my-service",
+            "weight": null
+        }
+    },
+    "status": {
+        "ingress": null
+    }
+}
+
+
+===============================================================================
+
+Image Stream Import (for DockerHub image)
+https://10.2.2.2:8443/oapi/v1/namespaces/test-1/imagestreamimports
+
+{
+    "apiVersion": "v1",
+    "kind": "ImageStreamImport",
+    "metadata": {
+        "creationTimestamp": null,
+        "name": "newapp"
+    },
+    "spec": {
+        "images": [
+            {
+                "from": {
+                    "kind": "DockerImage",
+                    "name": "kubernetes/guestbook"
+                },
+                "importPolicy": {}
+            }
+        ],
+        "import": false
+    },
+    "status": {}
+}
+
+

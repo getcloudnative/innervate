@@ -5,16 +5,12 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+from innervate.objects import Project
 
-class UserManager(object):
 
-    def __init__(self):
-        super(UserManager, self).__init__()
-        self.users = {}
+class OpenShiftAPI(object):
 
-    def add_user(self, user):
-        self.users[user.username] = user
-
-    def iterator(self):
-        for u in self.users.values():
-            yield u
+    def list_project_names(self, user):
+        projects_data = Project.objects(user.api)
+        names = [p.name for p in projects_data]
+        return names

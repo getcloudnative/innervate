@@ -5,12 +5,24 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
-from innervate.objects import Project
+from innervate.objects import Project, ProjectRequest
 
 
 class OpenShiftAPI(object):
 
-    def list_project_names(self, user):
-        projects_data = Project.objects(user.api)
+    def __init__(self, user):
+        super(OpenShiftAPI, self).__init__()
+        self.user = user
+
+    def list_project_names(self):
+        projects_data = Project.objects(self.user.http_client)
         names = [p.name for p in projects_data]
         return names
+
+    def create_project(self, project_name):
+        p = ProjectRequest.new(self.user.http_client, project_name)
+        p.create()
+
+    def delete_project(self, project_name):
+        p = Project.new(self.user.http_client, project_name)
+        p.delete()

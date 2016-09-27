@@ -6,6 +6,7 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 import pykube
+from innervate.api import OpenShiftAPI
 
 from .config import PykubeConfig
 from . import auth
@@ -29,7 +30,8 @@ class UserManager(object):
         user.token = auth.login(self.host, self.port, username, password)
         user.config = PykubeConfig(self.host, self.port,
                                    user.username, user.token)
-        user.api = pykube.HTTPClient(user.config)
+        user.http_client = pykube.HTTPClient(user.config)
+        user.api = OpenShiftAPI(user)
 
         self.users[user.username] = user
 
@@ -47,6 +49,7 @@ class User(object):
         super(User, self).__init__()
         self.username = username
 
+        # Static for the user itself
         self.config = None
+        self.http_client = None
         self.api = None
-        self.current_project = None

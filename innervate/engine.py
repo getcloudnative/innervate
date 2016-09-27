@@ -15,7 +15,6 @@ class InnervateEngine(object):
         super(InnervateEngine, self).__init__()
 
         self.user_manager = None
-        self.openshift_api = None
 
     def initialize(self):
 
@@ -28,4 +27,3 @@ class InnervateEngine(object):
         # TODO: Temporary until loading user info from a file
         self.user_manager.load_user('user', 'user')
 
-        self.openshift_api = OpenShiftAPI()

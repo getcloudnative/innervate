@@ -118,3 +118,9 @@ class OpenShiftAPI(object):
                                                                  selector=selector)
         return route_data
 
+    def scale_service(self, service_name, new_replicas, project_name=None):
+        project_name = project_name or self.current_project
+        rc = self.list_rc_for_service(service_name, project_name=project_name).get()
+        rc.obj['spec']['replicas'] = new_replicas
+        rc.update()
+

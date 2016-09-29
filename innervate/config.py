@@ -5,7 +5,33 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import yaml
+
 from pykube import KubeConfig
+
+
+class InnervateConfig(object):
+
+    def __init__(self):
+        super(InnervateConfig, self).__init__()
+        self._config = None
+
+    def load(self, filename):
+        with open(filename) as f:
+            self._config = yaml.load(f)
+
+    @property
+    def host(self):
+        return self._config['host']
+
+    @property
+    def port(self):
+        return self._config['port']
+
+    @property
+    def users(self):
+        """Returns list of username/password tuples"""
+        return [(u['username'], u['password']) for u in self._config['users']]
 
 
 class PykubeConfig(KubeConfig):

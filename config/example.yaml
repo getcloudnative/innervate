@@ -1,0 +1,7 @@
+host: kubernetes
+port: 8443
+users:
+ - username: user
+   password: user
+ - username: user2
+   password: user2

@@ -11,19 +11,19 @@ from innervate.user import UserManager
 
 class InnervateEngine(object):
 
-    def __init__(self):
+    def __init__(self, config):
         super(InnervateEngine, self).__init__()
 
         self.user_manager = None
+        self.config = config
 
     def initialize(self):
 
-        # TODO: Eventually have these configurable
-        host = 'kubernetes'
-        port = '8443'
+        # Create the manager responsible for tracking and authenticating users
+        self.user_manager = UserManager(self.config.host,
+                                        self.config.port)
 
-        self.user_manager = UserManager(host, port)
-
-        # TODO: Temporary until loading user info from a file
-        self.user_manager.load_user('user', 'user')
+        # Load each configured user
+        for u in self.config.users:
+            self.user_manager.load_user(u[0], u[1])
 

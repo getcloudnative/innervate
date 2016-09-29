@@ -17,10 +17,11 @@ class OpenShiftAPI(object):
         super(OpenShiftAPI, self).__init__()
         self.user = user
 
-    def list_project_names(self):
-        projects_data = Project.objects(self.user.http_client)
-        names = [p.name for p in projects_data]
-        return names
+        # Used as the default for all namespaced calls
+        self.current_project = None
+
+    def list_projects(self):
+        return Project.objects(self.user.http_client)
 
     def create_project(self, project_name):
         p = ProjectRequest.new(self.user.http_client, project_name)
@@ -30,20 +31,19 @@ class OpenShiftAPI(object):
         p = Project.new(self.user.http_client, project_name)
         p.delete()
 
-    def list_service_names(self, project_name):
-        service_data = Service.objects(self.user.http_client).filter(namespace=project_name)
-        names = [p.name for p in service_data]
-        return names
+    def list_services(self, project_name=None):
+        project_name = project_name or self.current_project
+        return Service.objects(self.user.http_client).filter(namespace=project_name)
 
-    def get_service(self, project_name, service_name):
-        query = Service.objects(self.user.http_client)
-        query.namespace = project_name
-        service_data = query.get_by_name(service_name)
-        return service_data
+    def get_service(self, service_name, project_name=None):
+        project_name = project_name or self.current_project
+        query = Service.objects(self.user.http_client).filter(namespace=project_name)
+        return query.get_by_name(service_name)
 
-    def create_service_from_image(self, project_name, service_name,
-                                  image_name, ports=None,
-                                  create_route=True):
+    def create_service_from_image(self, service_name, image_name,
+                                  project_name = None, ports=None, create_route=True):
+        project_name = project_name or self.current_project
+
         dc = DeploymentConfig.new(self.user.http_client, service_name,
                                   project_name, image_name)
         dc.create()
@@ -61,43 +61,44 @@ class OpenShiftAPI(object):
                           service_name, port_name)
             r.create()
 
-    def delete_service(self, project_name, service_name):
-        # dc = DeploymentConfig.new(self.user.http_client, service_name,
-        #                          project_name, None, replicas=0)
-        query = DeploymentConfig.objects(self.user.http_client)
-        query.namespace = project_name
+    def delete_service(self, service_name, project_name=None):
+        project_name = project_name or self.current_project
+
+        query = DeploymentConfig.objects(self.user.http_client).filter(namespace=project_name)
         dc = query.get_by_name(service_name)
         dc.obj['spec']['replicas'] = 0
         dc.update()
 
-        time.sleep(5)  # probably a better way to handle this
+        time.sleep(3)  # probably a better way to handle this :)
 
         s = Service.new(self.user.http_client, service_name, project_name,
                         service_name)
         s.delete()
         dc.delete()
 
-        rc_names = self.get_replication_controller_names_for_service(project_name, service_name)
+        rcs = self.list_rc_for_service(service_name, project_name=project_name)
+        rc_names = [r.name for r in rcs]
         for r in rc_names:
             rc = ReplicationController.new(self.user.http_client, r, project_name)
             rc.delete()
 
-        route_names = self.get_route_names_for_service(project_name, service_name)
+        routes = self.list_routes_for_service(service_name, project_name=project_name)
+        route_names = [r.name for r in routes]
         for r in route_names:
             route = Route.new(self.user.http_client, r, project_name, service_name, None)
             route.delete()
 
-    def get_replication_controller_names_for_service(self, project_name, service_name):
+    def list_rc_for_service(self, service_name, project_name=None):
+        project_name = project_name or self.current_project
+
         rc_data =\
             ReplicationController.objects(self.user.http_client).filter(namespace=project_name,
                                                                         selector={'app': service_name})
-        names = [r.name for r in rc_data]
-        return names
+        return rc_data
 
-    def get_route_names_for_service(self, project_name, service_name):
+    def list_routes_for_service(self, project_name, service_name):
         selector = {'app': service_name}
         route_data = Route.objects(self.user.http_client).filter(namespace=project_name,
                                                                  selector=selector)
-        names = [r.name for r in route_data]
-        return names
+        return route_data
 

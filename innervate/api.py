@@ -96,7 +96,8 @@ class OpenShiftAPI(object):
                                                                         selector={'app': service_name})
         return rc_data
 
-    def list_routes_for_service(self, project_name, service_name):
+    def list_routes_for_service(self, service_name, project_name=None):
+        project_name = project_name or self.current_project
         selector = {'app': service_name}
         route_data = Route.objects(self.user.http_client).filter(namespace=project_name,
                                                                  selector=selector)

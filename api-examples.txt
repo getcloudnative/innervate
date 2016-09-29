@@ -154,6 +154,135 @@ https://10.2.2.2:8443/oapi/v1/namespaces/test-1/deploymentconfigs
 
 ===============================================================================
 
+Build Config (GitHub)
+https://kubernetes:8443/oapi/v1/namespaces/django-test/buildconfigs
+
+{
+    "apiVersion": "v1",
+    "kind": "BuildConfig",
+    "metadata": {
+        "annotations": {
+            "openshift.io/generated-by": "OpenShiftNewApp"
+        },
+        "creationTimestamp": null,
+        "labels": {
+            "app": "django-ex"
+        },
+        "name": "django-ex"
+    },
+    "spec": {
+        "output": {
+            "to": {
+                "kind": "ImageStreamTag",
+                "name": "django-ex:latest"
+            }
+        },
+        "postCommit": {},
+        "resources": {},
+        "source": {
+            "git": {
+                "uri": "https://github.com/jdob-openshift/django-ex"
+            },
+            "type": "Git"
+        },
+        "strategy": {
+            "sourceStrategy": {
+                "from": {
+                    "kind": "ImageStreamTag",
+                    "name": "python:3.5",
+                    "namespace": "openshift"
+                }
+            },
+            "type": "Source"
+        },
+        "triggers": []
+    },
+    "status": {
+        "lastVersion": 0
+    }
+}
+
+===============================================================================
+
+DeploymentConfig (for s2i)
+https://kubernetes:8443/oapi/v1/namespaces/django-test/deploymentconfigs
+
+{
+    "apiVersion": "v1",
+    "kind": "DeploymentConfig",
+    "metadata": {
+        "annotations": {
+            "openshift.io/generated-by": "OpenShiftNewApp"
+        },
+        "creationTimestamp": null,
+        "labels": {
+            "app": "django-ex"
+        },
+        "name": "django-ex"
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "app": "django-ex",
+            "deploymentconfig": "django-ex"
+        },
+        "strategy": {
+            "resources": {}
+        },
+        "template": {
+            "metadata": {
+                "annotations": {
+                    "openshift.io/container.django-ex.image.entrypoint": "[\"container-entrypoint\",\"/bin/sh\",\"-c\",\"$STI_SCRIPTS_PATH/usage\"]",
+                    "openshift.io/generated-by": "OpenShiftNewApp"
+                },
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "django-ex",
+                    "deploymentconfig": "django-ex"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "django-ex:latest",
+                        "name": "django-ex",
+                        "ports": [
+                            {
+                                "containerPort": 8080,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "resources": {}
+                    }
+                ]
+            }
+        },
+        "test": false,
+        "triggers": [
+            {
+                "type": "ConfigChange"
+            },
+            {
+                "imageChangeParams": {
+                    "automatic": true,
+                    "containerNames": [
+                        "django-ex"
+                    ],
+                    "from": {
+                        "kind": "ImageStreamTag",
+                        "name": "django-ex:latest"
+                    }
+                },
+                "type": "ImageChange"
+            }
+        ]
+    },
+    "status": {}
+}
+
+
+===============================================================================
+
 Service
 https://10.2.2.2:8443/api/v1/namespaces/test-1/services
 

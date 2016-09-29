@@ -8,7 +8,7 @@
 import time
 
 from innervate.objects import Project, ProjectRequest, Service, \
-    DeploymentConfig, Route, ReplicationController
+    DeploymentConfig, Route, ReplicationController, BuildConfig
 
 
 class OpenShiftAPI(object):
@@ -40,8 +40,23 @@ class OpenShiftAPI(object):
         query = Service.objects(self.user.http_client).filter(namespace=project_name)
         return query.get_by_name(service_name)
 
+    def create_service_from_source(self, service_name, source_uri, source_image, source_namespace,
+                                   project_name=None, ports=None, create_route=True):
+        project_name = project_name or self.current_project
+
+        bc = BuildConfig.new(self.user.http_client, service_name, project_name,
+                             source_uri, source_image, source_namespace)
+        bc.create()
+
+        image_name = '%s:latest' % service_name
+        self.create_service_from_image(service_name,
+                                       image_name,
+                                       project_name=project_name,
+                                       ports=ports,
+                                       create_route=create_route)
+
     def create_service_from_image(self, service_name, image_name,
-                                  project_name = None, ports=None, create_route=True):
+                                  project_name=None, ports=None, create_route=True):
         project_name = project_name or self.current_project
 
         dc = DeploymentConfig.new(self.user.http_client, service_name,

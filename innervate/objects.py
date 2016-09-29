@@ -70,6 +70,51 @@ class ProjectRequest(OpenShiftAPIObject):
         }
         return cls(api, doc)
 
+class BuildConfig(OpenShiftNamespacedAPIObject):
+    endpoint = 'buildconfigs'
+    kind = 'BuildConfig'
+
+    @classmethod
+    def new(cls, api, name, project_name, source_uri, source_image, source_namespace):
+        # Note: scoped to git source builds for now
+        doc = {
+            'apiVersion': 'v1',
+            'kind': cls.kind,
+            'metadata': {
+                'name': name,
+                'namespace': project_name,
+                'labels': {
+                    'app': name,
+                }
+            },
+            'spec': {
+                'output': {
+                    'to': {
+                        'kind': 'ImageStreamTag',
+                        'name': '%s:latest' % name,  # need to not hardcode this
+                    }
+                },
+                'source': {
+                    'git': {
+                        'uri': source_uri,
+                    },
+                    'type': 'Git',
+                },
+                'strategy': {
+                    'sourceStrategy': {
+                        'from': {
+                            'kind': 'ImageStreamTag',
+                            'name': source_image,
+                            'namespace': source_namespace,
+                        }
+                    },
+                    'type': 'Source'
+                },
+                'triggers': [],
+            }
+        }
+        return cls(api, doc)
+
 
 class DeploymentConfig(OpenShiftNamespacedAPIObject):
     endpoint = 'deploymentconfigs'

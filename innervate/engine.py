@@ -5,8 +5,8 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
-from innervate.api import OpenShiftAPI
 from innervate.user import UserManager
+from innervate.scenario.manager import ScenarioManager
 
 
 class InnervateEngine(object):
@@ -14,8 +14,10 @@ class InnervateEngine(object):
     def __init__(self, config):
         super(InnervateEngine, self).__init__()
 
-        self.user_manager = None
         self.config = config
+
+        self.user_manager = None
+        self.scenario_manager = None
 
     def initialize(self):
 
@@ -27,3 +29,5 @@ class InnervateEngine(object):
         for u in self.config.users:
             self.user_manager.load_user(u[0], u[1])
 
+        # Create and initialize the scenarios to be run
+        self.scenario_manager = ScenarioManager(self.config.scenarios)

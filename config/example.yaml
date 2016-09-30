@@ -5,3 +5,9 @@ users:
    password: user
  - username: user2
    password: user2
+scenarios:
+ - name: create-service
+   type: CreateService
+   config:
+     image_list: kubernetes/guestbook
+     max_services_per_user: 3

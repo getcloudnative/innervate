@@ -5,8 +5,13 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import logging
+
 from innervate.user import UserManager
 from innervate.scenario.manager import ScenarioManager
+
+
+LOG = logging.getLogger(__name__)
 
 
 class InnervateEngine(object):
@@ -20,6 +25,7 @@ class InnervateEngine(object):
         self.scenario_manager = None
 
     def initialize(self):
+        LOG.debug('Initializing InnervateEngine')
 
         # Create the manager responsible for tracking and authenticating users
         self.user_manager = UserManager(self.config.host,

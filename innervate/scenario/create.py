@@ -6,9 +6,21 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 
-from .base import Scenario
+from . import base
 
-class CreateService(Scenario):
+
+class CreateService(base.Scenario):
+    """Creates a new service.
+
+    Configuration:
+    * image_list: comma-separated list of image names to randomly choose from when
+           creating the service
+    * max_services_per_user: maximum number of services to deploy for each user; if
+           this scenario is called and the number of services is at the max, no
+           action will be taken
+    """
 
     def run(self, user):
-        print('Running %s' % self)
+        if len(user.api.list_services()) >= self.config['max_services_per_user']:
+            raise base.NoOperation('The user is already at the maximum service count of [%s]' %
+                                   self.config['max_services_per_user'])

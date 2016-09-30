@@ -451,3 +451,31 @@ Replication Controller
     "uid": "a6b150de-867a-11e6-977d-525400b263eb"
   }
 }
+
+===============================================================================
+
+Scale (run through CLI)
+PUT https://kubernetes:8443/oapi/v1/namespaces/django-test/deploymentconfigs/django-ex/scale
+
+{
+    "apiVersion": "extensions/v1beta1",
+    "kind": "Scale",
+    "metadata": {
+        "creationTimestamp": "2016-09-29T18:15:06Z",
+        "name": "django-ex",
+        "namespace": "django-test",
+        "resourceVersion": "102763",
+        "uid": "a622e8a3-8670-11e6-977d-525400b263eb"
+    },
+    "spec": {
+        "replicas": 2
+    },
+    "status": {
+        "replicas": 1,
+        "selector": {
+            "app": "django-ex",
+            "deploymentconfig": "django-ex"
+        },
+        "targetSelector": "app=django-ex,deploymentconfig=django-ex"
+    }
+}

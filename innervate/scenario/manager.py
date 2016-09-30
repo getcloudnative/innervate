@@ -45,6 +45,13 @@ class ScenarioManager(object):
             name = scenario_desc.get('name', None) or scenario_desc['type']
             scenario = scenario_class(name,
                                       scenario_desc.get('config', None))
+
+            try:
+                scenario.validate()
+            except base.ValidationException as e:
+                LOG.error('Scenario [%s] has an invalid configuration: %s' % (scenario.name, e.message))
+                continue
+
             self.scenarios.append(scenario)
 
     def run_random_scenario(self, user):

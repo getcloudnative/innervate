@@ -25,6 +25,16 @@ class CreateService(base.Scenario):
            action will be taken
     """
 
+    ALL_CONFIG_PROPS = (
+        IMAGE_LIST, MAX_SERVICES
+    ) = (
+        'image_list', 'max_services_per_user'
+    )
+
+    def validate(self):
+        super(CreateService, self).validate()
+        # Add validation for required config and their values
+
     def run(self, user):
         if len(user.api.list_services()) >= self.config['max_services_per_user']:
             raise base.NoOperation('The user is already at the maximum service count of [%s]' %

@@ -20,3 +20,10 @@ class Scenario(object):
     @abc.abstractmethod
     def run(self, user):
         pass
+
+
+class NoOperation(Exception):
+    """Raised by a scenario when it is requested to run but, because of its
+    configuration or the state of the user, the scenario takes no action.
+    This is not necessarily an error condition."""
+    pass

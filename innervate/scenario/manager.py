@@ -5,13 +5,14 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import copy
 import random
 
-from .create import CreateService
+from . import (base, create)
 
 
 SCENARIO_CLASSES = {
-    'CreateService': CreateService,
+    'CreateService': create.CreateService,
 }
 
 
@@ -47,5 +48,22 @@ class ScenarioManager(object):
         if not self.scenarios:
             raise Exception('Scenarios must be loaded using the "initialize" call')
 
-        scenario = random.choice(self.scenarios)
-        scenario.run(user)
+        # Attempt to run a random scenario. If the scenario reports that it does not
+        # run, remove it from the possibilities and try again with another random
+        # scenario. Once all of those options have been exhausted,
+        execution_scenarios = copy.copy(self.scenarios)
+        while execution_scenarios:
+            scenario = random.choice(self.scenarios)
+            try:
+                scenario.run(user)
+            except base.NoOperation:
+                # Remove this scenario from the possible scenarios and attempt to
+                # try another
+                execution_scenarios.remove(scenario)
+            else:
+                break
+        else:
+            # We ran out of scenarios and none executed. This isn't an error per se, but
+            # it likely means that without user intervention, subsequent attempts to
+            # run the scenario set again will not produce any results.
+            print('No scenarios found to execute for user [%s]' % user)

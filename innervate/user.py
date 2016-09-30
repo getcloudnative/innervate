@@ -39,7 +39,7 @@ class UserManager(object):
         user.api = OpenShiftAPI(user)
 
         self.users[user.username] = user
-        LOG.debug('Loaded user [%s]' % user.username)
+        LOG.info('Loaded user [%s]' % user.username)
 
     def user(self, username):
         return self.users[username]

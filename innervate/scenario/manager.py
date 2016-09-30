@@ -6,10 +6,13 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 import copy
+import logging
 import random
 
 from . import (base, create)
 
+
+LOG = logging.getLogger(__name__)
 
 SCENARIO_CLASSES = {
     'CreateService': create.CreateService,
@@ -56,9 +59,10 @@ class ScenarioManager(object):
             scenario = random.choice(self.scenarios)
             try:
                 scenario.run(user)
-            except base.NoOperation:
+            except base.NoOperation as e:
                 # Remove this scenario from the possible scenarios and attempt to
                 # try another
+                LOG.info('Skipping scenario [%s]: %s' % (scenario.name, e.message))
                 execution_scenarios.remove(scenario)
             else:
                 break

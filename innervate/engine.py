@@ -25,7 +25,7 @@ class InnervateEngine(object):
         self.scenario_manager = None
 
     def initialize(self):
-        LOG.debug('Initializing InnervateEngine')
+        LOG.info('Initializing InnervateEngine')
 
         # Create the manager responsible for tracking and authenticating users
         self.user_manager = UserManager(self.config.host,

@@ -5,8 +5,13 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import logging
+import random
 
 from . import base
+
+
+LOG = logging.getLogger(__name__)
 
 
 class CreateService(base.Scenario):
@@ -24,3 +29,12 @@ class CreateService(base.Scenario):
         if len(user.api.list_services()) >= self.config['max_services_per_user']:
             raise base.NoOperation('The user is already at the maximum service count of [%s]' %
                                    self.config['max_services_per_user'])
+
+        image_name = random.choice(self.image_list)
+        LOG.debug('Creating service with image [%s]' % image_name)
+
+    @property
+    def image_list(self):
+        return self.config['image_list'].split(',')
+
+

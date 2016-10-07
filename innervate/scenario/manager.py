@@ -16,6 +16,7 @@ LOG = logging.getLogger(__name__)
 
 SCENARIO_CLASSES = {
     'CreateService': create.CreateService,
+    'CreateProject': create.CreateProject,
 }
 
 
@@ -63,7 +64,7 @@ class ScenarioManager(object):
         # scenario. Once all of those options have been exhausted,
         execution_scenarios = copy.copy(self.scenarios)
         while execution_scenarios:
-            scenario = random.choice(self.scenarios)
+            scenario = random.choice(execution_scenarios)
             try:
                 scenario.run(user)
             except base.NoOperation as e:

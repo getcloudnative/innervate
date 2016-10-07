@@ -11,6 +11,10 @@ scenarios:
     config:
       image_list: kubernetes/guestbook
       max_services_per_user: 3
+  - name: create-project
+    type: CreateProject
+    config:
+      max_projects_per_user: 5
 logging:
   version: 1
   formatters:

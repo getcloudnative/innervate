@@ -7,9 +7,13 @@
 
 import abc
 import logging
+import random
+import string
 
 
 LOG = logging.getLogger(__name__)
+
+RANDOM_NAME_LENGTH = 8
 
 
 class Scenario(object):
@@ -51,3 +55,20 @@ class NoOperation(Exception):
 class ValidationException(Exception):
     """Raised when a scenario has an invalid configuration."""
     pass
+
+
+def select_random_project(user):
+    project_names = [p.name for p in user.api.list_projects()]
+
+    if not project_names:
+        raise NoOperation('The user [%s] has no existing projects' % user.username)
+
+    project_name = random.choice(project_names)
+    user.api.current_project = project_name
+
+    return project_name
+
+
+def random_name():
+    """Returns a suitable randomized name."""
+    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(RANDOM_NAME_LENGTH))

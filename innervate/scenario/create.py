@@ -14,6 +14,34 @@ from . import base
 LOG = logging.getLogger(__name__)
 
 
+class CreateProject(base.Scenario):
+    """Creates a new project.
+
+    Configuration:
+    * name: name of the project; must be unique for the user
+    """
+
+    ALL_CONFIG_PROPS = (
+        NAME_PREFIX, MAX_PROJECTS_PER_USER,
+    ) = (
+        'name_prefix', 'max_projects_per_user',
+    )
+
+    def run(self, user):
+
+        # Sanity check to skip this scenario if no more projects can be created
+        if len(user.api.list_projects()) >= self.config[self.MAX_PROJECTS_PER_USER]:
+            raise base.NoOperation('The user is already at the maximum number of projects [%s]' %
+                                   self.config[self.MAX_PROJECTS_PER_USER])
+
+        # Generate the project name
+        name_prefix = self.config.get(self.NAME_PREFIX, 'inn-')
+        project_name = name_prefix + base.random_name()
+
+        LOG.debug('Creating project [%s]' % project_name)
+        user.api.create_project(project_name)
+
+
 class CreateService(base.Scenario):
     """Creates a new service.
 
@@ -36,15 +64,23 @@ class CreateService(base.Scenario):
         # Add validation for required config and their values
 
     def run(self, user):
-        if len(user.api.list_services()) >= self.config['max_services_per_user']:
+
+        # Randomly select a project before looking fro services
+        project_name = base.select_random_project(user)
+
+        # Sanity check to skip this scenario if no more services can be created
+        if len(user.api.list_services()) >= self.config[self.MAX_SERVICES]:
             raise base.NoOperation('The user is already at the maximum service count of [%s]' %
                                    self.config['max_services_per_user'])
 
+        # Randomly select an image
         image_name = random.choice(self.image_list)
-        LOG.debug('Creating service with image [%s]' % image_name)
+
+        LOG.debug('Creating service in project [%s] with image [%s]' %
+                  (project_name, image_name))
 
     @property
     def image_list(self):
-        return self.config['image_list'].split(',')
+        return self.config[self.IMAGE_LIST].split(',')
 
 

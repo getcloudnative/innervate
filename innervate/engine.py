@@ -8,7 +8,7 @@
 import logging
 
 from innervate.user import UserManager
-from innervate.scenario.manager import ScenarioManager
+from innervate.scenario import ScenarioManager
 
 
 LOG = logging.getLogger(__name__)

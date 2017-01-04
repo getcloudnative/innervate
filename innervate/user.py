@@ -24,14 +24,17 @@ class UserManager(object):
 
     def load_user(self, username, password):
         """Mechanism for adding a user to the manager, loading the
-        token and configuring the API in the process."""
+        token and configuring the API in the process.
+
+        :rtype: User
+        """
 
         user = User(username)
         user.token = auth.login(self.host, self.port, username, password)
         user.config = PykubeConfig(self.host, self.port,
                                    user.username, user.token)
         user.http_client = pykube.HTTPClient(user.config)
-        user.api = OpenShiftAPI(user)
+        user.api = OpenShiftAPI(user.http_client)
 
         self.users[user.username] = user
 
@@ -44,6 +47,7 @@ class UserManager(object):
 
 
 class User(object):
+    """Context information for a particular user."""
 
     def __init__(self, username):
         super(User, self).__init__()
@@ -52,4 +56,4 @@ class User(object):
         # Static for the user itself
         self.config = None
         self.http_client = None
-        self.api = None
+        self.api = None  # type: OpenShiftAPI

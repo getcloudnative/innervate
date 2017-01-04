@@ -10,6 +10,7 @@ from innervate.user import UserManager
 
 
 class InnervateEngine(object):
+    """Driving engine for running the simulations."""
 
     def __init__(self, config):
         super(InnervateEngine, self).__init__()

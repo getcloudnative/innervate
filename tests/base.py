@@ -5,3 +5,25 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import os
+import unittest
+
+from innervate.config import InnervateConfig
+
+
+class BaseTestCase(unittest.TestCase):
+
+    def setUp(self):
+        super(BaseTestCase, self).setUp()
+
+        # Load and initialize the configuration based on the example.yaml
+        # This may need to be an explicit testing config in the future, but
+        # for now it works until it doesn't
+        self.config = InnervateConfig()
+        self.config.load(self.example_config_filename)
+
+    @property
+    def example_config_filename(self):
+        x = os.path.dirname(os.path.abspath(__file__))
+        ex = os.path.join(os.path.split(x)[0], 'config', 'example.yaml')
+        return ex

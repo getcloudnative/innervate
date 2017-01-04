@@ -5,11 +5,16 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import logging
 import pykube
-from innervate.api import OpenShiftAPI
 
+from .api import OpenShiftAPI
 from .config import PykubeConfig
 from . import auth
+
+
+LOG = logging.getLogger(__name__)
+
 
 class UserManager(object):
 
@@ -37,6 +42,7 @@ class UserManager(object):
         user.api = OpenShiftAPI(user.http_client)
 
         self.users[user.username] = user
+        LOG.info('Loaded user [%s]' % user.username)
 
     def user(self, username):
         return self.users[username]

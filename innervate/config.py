@@ -33,6 +33,10 @@ class InnervateConfig(object):
         """Returns list of username/password tuples"""
         return [(u['username'], u['password']) for u in self._config['users']]
 
+    @property
+    def scenarios(self):
+        return self._config['scenarios']
+
 
 class PykubeConfig(KubeConfig):
 

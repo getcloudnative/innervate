@@ -70,6 +70,7 @@ class ProjectRequest(OpenShiftAPIObject):
         }
         return cls(api, doc)
 
+
 class BuildConfig(OpenShiftNamespacedAPIObject):
     endpoint = 'buildconfigs'
     kind = 'BuildConfig'

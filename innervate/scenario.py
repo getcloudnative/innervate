@@ -41,7 +41,8 @@ class ScenarioManager(object):
 
             scenario_class = SCENARIO_CLASSES.get(scenario_desc['type'], None)
             if scenario_class is None:
-                raise Exception('Scenario type must be one of "%"' % ','.join(SCENARIO_CLASSES.keys()))
+                raise Exception('Scenario type must be one of "%s"' %
+                                ','.join(SCENARIO_CLASSES.keys()))
 
             name = scenario_desc.get('name', None) or scenario_desc['type']
             scenario = scenario_class(name,
@@ -50,7 +51,8 @@ class ScenarioManager(object):
             try:
                 scenario.validate()
             except base.ValidationException as e:
-                LOG.error('Scenario [%s] has an invalid configuration: %s' % (scenario.name, e.message))
+                LOG.error('Scenario [%s] has an invalid configuration: %s' %
+                          (scenario.name, e.message))
                 continue
 
             self.scenarios.append(scenario)

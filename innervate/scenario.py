@@ -15,8 +15,8 @@ from scenarios import (base, create)
 LOG = logging.getLogger(__name__)
 
 SCENARIO_CLASSES = {
-    'CreateService': create.CreateService,
-    'CreateProject': create.CreateProject,
+    create.CreateProject.TYPE: create.CreateProject,
+    create.CreateService.TYPE: create.CreateService,
 }
 
 

@@ -8,6 +8,8 @@
 import os
 import unittest
 
+import mock
+
 from innervate.config import InnervateConfig
 
 
@@ -21,6 +23,11 @@ class BaseTestCase(unittest.TestCase):
         # for now it works until it doesn't
         self.config = InnervateConfig()
         self.config.load(self.example_config_filename)
+
+        # Suitable for mocking out API calls scoped to a user
+        self.mock_api = mock.MagicMock()
+        self.mock_user = mock.MagicMock()
+        self.mock_user.api = self.mock_api
 
     @property
     def example_config_filename(self):

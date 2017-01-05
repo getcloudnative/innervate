@@ -21,6 +21,8 @@ class CreateProject(base.Scenario):
     * name: name of the project; must be unique for the user
     """
 
+    TYPE = 'CreateProject'
+
     ALL_CONFIG_PROPS = (
         NAME_PREFIX, MAX_PROJECTS_PER_USER,
     ) = (
@@ -30,7 +32,7 @@ class CreateProject(base.Scenario):
     def run(self, user):
 
         # Sanity check to skip this scenario if no more projects can be created
-        if len(user.api.list_projects()) >= self.config[self.MAX_PROJECTS_PER_USER]:
+        if len(user.api.projects.list()) >= self.config[self.MAX_PROJECTS_PER_USER]:
             raise base.NoOperation('The user is already at the maximum number of projects [%s]' %
                                    self.config[self.MAX_PROJECTS_PER_USER])
 
@@ -39,7 +41,7 @@ class CreateProject(base.Scenario):
         project_name = name_prefix + base.random_name()
 
         LOG.debug('Creating project [%s]' % project_name)
-        user.api.create_project(project_name)
+        user.api.projects.create(project_name)
 
 
 class CreateService(base.Scenario):
@@ -53,11 +55,15 @@ class CreateService(base.Scenario):
            action will be taken
     """
 
+    TYPE = 'CreateService'
+
     ALL_CONFIG_PROPS = (
-        IMAGE_LIST, MAX_SERVICES
+        NAME_PREFIX, IMAGE_LIST, MAX_SERVICES
     ) = (
-        'image_list', 'max_services_per_user'
+        'name_prefix', 'image_list', 'max_services_per_user'
     )
+
+    # TODO: Add configuration properties for route creation (bool, port, etc.)
 
     def validate(self):
         super(CreateService, self).validate()
@@ -69,18 +75,27 @@ class CreateService(base.Scenario):
         project_name = base.select_random_project(user)
 
         # Sanity check to skip this scenario if no more services can be created
-        if len(user.api.list_services()) >= self.config[self.MAX_SERVICES]:
+        if len(user.api.services.list()) >= self.config[self.MAX_SERVICES]:
             raise base.NoOperation('The user is already at the maximum service count of [%s]' %
                                    self.config['max_services_per_user'])
 
         # Randomly select an image
-        image_name = random.choice(self.image_list)
+        image_name = self._select_random_image()
 
-        LOG.debug('Creating service in project [%s] with image [%s]' %
-                  (project_name, image_name))
+        # Generate the service name
+        name_prefix = self.config.get(self.NAME_PREFIX, 'inn-')
+        service_name = name_prefix + base.random_name()
+
+        LOG.debug('Creating service [%s] in project [%s] with image [%s]' %
+                  (service_name, project_name, image_name))
+        user.api.services.create_from_image(service_name,
+                                            image_name,
+                                            project_name=project_name)
 
     @property
-    def image_list(self):
-        return self.config[self.IMAGE_LIST].split(',')
+    def _select_random_image(self):
+        il = self.config[self.IMAGE_LIST].split(',')
+        image_name = random.choice(il)
+        return image_name
 
 

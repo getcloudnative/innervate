@@ -37,6 +37,10 @@ class InnervateConfig(object):
     def scenarios(self):
         return self._config['scenarios']
 
+    def scenarios_for_type(self, type_name):
+        x = [c for c in self.scenarios if c['type'] == type_name]
+        return x
+
 
 class PykubeConfig(KubeConfig):
 

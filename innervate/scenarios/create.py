@@ -97,5 +97,3 @@ class CreateService(base.Scenario):
         il = self.config[self.IMAGE_LIST].split(',')
         image_name = random.choice(il)
         return image_name
-
-

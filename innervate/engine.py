@@ -37,4 +37,5 @@ class InnervateEngine(object):
             self.user_manager.load_user(u[0], u[1])
 
         # Create and initialize the scenarios to be run
-        self.scenario_manager = ScenarioManager(self.config.scenarios)
+        self.scenario_manager = ScenarioManager()
+        self.scenario_manager.load(self.config.scenarios)

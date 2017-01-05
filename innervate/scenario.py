@@ -9,7 +9,7 @@ import copy
 import logging
 import random
 
-from . import (base, create)
+from scenarios import (base, create)
 
 
 LOG = logging.getLogger(__name__)
@@ -22,7 +22,11 @@ SCENARIO_CLASSES = {
 
 class ScenarioManager(object):
 
-    def __init__(self, config):
+    def __init__(self):
+        super(ScenarioManager, self).__init__()
+        self.scenarios = []
+
+    def load(self, config):
         """Loads the configurations for each scenario to be run.
 
         Each entry in the config will be a dict containing:
@@ -33,26 +37,25 @@ class ScenarioManager(object):
 
         :param config: list of dictionaries describing the scenarios to run
         """
-        self.scenarios = []
-
         for scenario_desc in config:
             if 'type' not in scenario_desc:
                 raise Exception('Each scenario must contain a "type"')
 
-            scenario_class = SCENARIO_CLASSES.get(scenario_desc['type'], None)
-            if scenario_class is None:
-                raise Exception('Scenario type must be one of "%s"' %
-                                ','.join(SCENARIO_CLASSES.keys()))
+            type_name = scenario_desc['type']
+            name = scenario_desc.get('name', None) or type_name
+            config = scenario_desc.get('config', None)
 
-            name = scenario_desc.get('name', None) or scenario_desc['type']
-            scenario = scenario_class(name,
-                                      scenario_desc.get('config', None))
+            scenario = self._instantiate_scenario(name, type_name, config)
 
             try:
                 scenario.validate()
             except base.ValidationException as e:
                 LOG.error('Scenario [%s] has an invalid configuration: %s' %
                           (scenario.name, e.message))
+                continue
+            except Exception as e:
+                LOG.error('Scenario [%s] failed validation with an '
+                          'unexpected error: %s' % (scenario.name, e.message))
                 continue
 
             self.scenarios.append(scenario)
@@ -66,7 +69,7 @@ class ScenarioManager(object):
         # scenario. Once all of those options have been exhausted,
         execution_scenarios = copy.copy(self.scenarios)
         while execution_scenarios:
-            scenario = random.choice(execution_scenarios)
+            scenario = self._choose_scenario(execution_scenarios)
             try:
                 scenario.run(user)
             except base.NoOperation as e:
@@ -80,4 +83,18 @@ class ScenarioManager(object):
             # We ran out of scenarios and none executed. This isn't an error per se, but
             # it likely means that without user intervention, subsequent attempts to
             # run the scenario set again will not produce any results.
-            print('No scenarios found to execute for user [%s]' % user)
+            LOG.info('No scenarios found to execute for user [%s]' % user)
+
+    @staticmethod
+    def _instantiate_scenario(name, type_name, config):
+        scenario_class = SCENARIO_CLASSES.get(type_name, None)
+        if scenario_class is None:
+            raise Exception('Scenario type must be one of "%s"' %
+                            ','.join(SCENARIO_CLASSES.keys()))
+
+        scenario = scenario_class(name, config)
+        return scenario
+
+    @staticmethod
+    def _choose_scenario(scenarios):
+        return random.choice(scenarios)

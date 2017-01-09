@@ -17,25 +17,38 @@ class BaseFunctionalTestCase(unittest.TestCase):
     def setUp(self):
         super(BaseFunctionalTestCase, self).setUp()
 
-        # Load and initialize the configuration based on the example.yaml
-        # This may need to be an explicit testing config in the future, but
-        # for now it works until it doesn't
-        self.config = InnervateConfig()
-        self.config.load(self.example_config_filename)
-
-        # Create and initialize an engine but don't start the loop; it
-        # will be used to get to the configured pieces we need
-        self.engine = InnervateEngine(self.config)
-        self.engine.initialize()
+        self.engine = build_engine()
 
         # Shortcut variables
+        self.config = self.engine.config
         self.user = self.engine.user_manager.user('user1')
 
     def scenario(self, name):
         return self.engine.scenario_manager.scenario_by_name(name)
 
-    @property
-    def example_config_filename(self):
-        x = os.path.dirname(os.path.abspath(__file__))
-        ex = os.path.join(os.path.split(x)[0], 'config', 'example.yaml')
-        return ex
+
+def build_engine():
+    """Creates and initializes an engine.
+
+    This can be used as the basis for functional tests or be imported
+    inside of a console and used directly to run scenarios.
+    """
+
+    # Load and initialize the configuration based on the example.yaml
+    # This may need to be an explicit testing config in the future, but
+    # for now it works until it doesn't
+    config = InnervateConfig()
+    config.load(example_config_filename())
+
+    # Create and initialize an engine but don't start the loop; it
+    # will be used to get to the configured pieces we need
+    engine = InnervateEngine(config)
+    engine.initialize()
+
+    return engine
+
+
+def example_config_filename():
+    x = os.path.dirname(os.path.abspath(__file__))
+    ex = os.path.join(os.path.split(x)[0], 'config', 'example.yaml')
+    return ex

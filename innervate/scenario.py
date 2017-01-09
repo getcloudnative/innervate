@@ -45,7 +45,7 @@ class ScenarioManager(object):
 
             type_name = scenario_desc['type']
             name = scenario_desc['name']
-            config = scenario_desc.get('config', None)
+            config = scenario_desc.get('config', {})
 
             scenario = self._instantiate_scenario(name, type_name, config)
 

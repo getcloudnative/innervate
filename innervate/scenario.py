@@ -9,21 +9,23 @@ import copy
 import logging
 import random
 
-from scenarios import (base, create)
+from scenarios import (base, create, delete)
 
-
-LOG = logging.getLogger(__name__)
 
 SCENARIO_CLASSES = {
     create.CreateProject.TYPE: create.CreateProject,
     create.CreateService.TYPE: create.CreateService,
+    delete.DeleteProject.TYPE: delete.DeleteProject,
 }
+
+LOG = logging.getLogger(__name__)
 
 
 class ScenarioManager(object):
 
     def __init__(self):
         super(ScenarioManager, self).__init__()
+        self.scenario_classes = copy.copy(SCENARIO_CLASSES)
         self.scenarios = []
 
     def load(self, config):
@@ -102,12 +104,11 @@ class ScenarioManager(object):
         else:
             return None
 
-    @staticmethod
-    def _instantiate_scenario(name, type_name, config):
-        scenario_class = SCENARIO_CLASSES.get(type_name, None)
+    def _instantiate_scenario(self, name, type_name, config):
+        scenario_class = self.scenario_classes.get(type_name, None)
         if scenario_class is None:
             raise Exception('Scenario type must be one of "%s"' %
-                            ','.join(SCENARIO_CLASSES.keys()))
+                            ','.join(self.scenario_classes.keys()))
 
         scenario = scenario_class(name, config)
         return scenario

@@ -15,6 +15,8 @@ scenarios:
     type: CreateProject
     config:
       max_projects_per_user: 5
+  - name: delete-project
+    type: DeleteProject
 logging:
   version: 1
   formatters:

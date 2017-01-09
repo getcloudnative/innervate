@@ -20,6 +20,17 @@ class ScenarioManagerTests(base.BaseTestCase):
 
         self.manager = scenario.ScenarioManager()
 
+    def test_load_defaults(self):
+        # Tests that load will run on all of the scenarios defined in
+        # the example config
+
+        # Test
+        m = scenario.ScenarioManager()
+        m.load(self.config.scenarios)
+
+        # Verify
+        self.assertEqual(3, len(m.scenarios))
+
     @mock.patch('innervate.scenario.ScenarioManager._instantiate_scenario')
     def test_load(self, mock_inst):
         # Setup
@@ -118,8 +129,8 @@ class ScenarioManagerTests(base.BaseTestCase):
                 self.name = name
                 self.config = config
 
-        scenario.SCENARIO_CLASSES.clear()
-        scenario.SCENARIO_CLASSES['type1'] = FakeScenarioType
+        self.manager.scenario_classes.clear()
+        self.manager.scenario_classes['type1'] = FakeScenarioType
 
         # Test
         created = self.manager._instantiate_scenario('name1', 'type1', {})

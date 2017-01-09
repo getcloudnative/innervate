@@ -129,7 +129,6 @@ class ScenarioManagerTests(base.BaseTestCase):
         self.assertEqual('name1', created.name)
         self.assertEqual({}, created.config)
 
-
     @staticmethod
     def _scenarios_config():
         """Returns a configuration for testing scenarios that is consistent

@@ -18,7 +18,10 @@ class CreateProject(base.Scenario):
     """Creates a new project.
 
     Configuration:
-    * name: name of the project; must be unique for the user
+
+    * name_prefix: prefix to affix to generated project names
+    * max_projects_per_user: maximum projects to create per user before a
+      noop is returned
     """
 
     TYPE = 'CreateProject'
@@ -29,12 +32,16 @@ class CreateProject(base.Scenario):
         'name_prefix', 'max_projects_per_user',
     )
 
+    DEFAULT_MAX_PROJECTS = 5
+
     def run(self, user):
 
         # Sanity check to skip this scenario if no more projects can be created
-        if len(user.api.projects.list()) >= self.config[self.MAX_PROJECTS_PER_USER]:
-            raise base.NoOperation('The user is already at the maximum number of projects [%s]' %
-                                   self.config[self.MAX_PROJECTS_PER_USER])
+        max_projects = self.config.get(self.MAX_PROJECTS_PER_USER,
+                                       self.DEFAULT_MAX_PROJECTS)
+        if len(user.api.projects.list()) >= max_projects:
+            msg = 'The user is already at the maximum number of projects [%s]'
+            raise base.NoOperation(msg % max_projects)
 
         # Generate the project name
         name_prefix = self.config.get(self.NAME_PREFIX, 'inn-')
@@ -48,11 +55,13 @@ class CreateService(base.Scenario):
     """Creates a new service.
 
     Configuration:
-    * image_list: comma-separated list of image names to randomly choose from when
-           creating the service
-    * max_services_per_user: maximum number of services to deploy for each user; if
-           this scenario is called and the number of services is at the max, no
-           action will be taken
+
+    * name_prefix: prefix to affix to generated service names
+    * image_list: comma-separated list of image names to randomly choose from
+      when creating the service
+    * max_services_per_user: maximum number of services to deploy for each
+      user; if this scenario is called and the number of services is at the
+      max, no action will be taken
     """
 
     TYPE = 'CreateService'
@@ -62,6 +71,8 @@ class CreateService(base.Scenario):
     ) = (
         'name_prefix', 'image_list', 'max_services_per_user'
     )
+
+    DEFAULT_MAX_SERVICES = 5
 
     # TODO: Add configuration properties for route creation (bool, port, etc.)
 
@@ -75,9 +86,11 @@ class CreateService(base.Scenario):
         project_name = base.select_random_project(user)
 
         # Sanity check to skip this scenario if no more services can be created
-        if len(user.api.services.list()) >= self.config[self.MAX_SERVICES]:
-            raise base.NoOperation('The user is already at the maximum service count of [%s]' %
-                                   self.config['max_services_per_user'])
+        max_services = self.config.get(self.MAX_SERVICES,
+                                       self.DEFAULT_MAX_SERVICES)
+        if len(user.api.services.list()) >= max_services:
+            msg = 'The user is already at the maximum service count of [%s]'
+            raise base.NoOperation(msg % max_services)
 
         # Randomly select an image
         image_name = self._select_random_image()

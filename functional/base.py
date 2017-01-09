@@ -23,8 +23,25 @@ class BaseFunctionalTestCase(unittest.TestCase):
         self.config = self.engine.config
         self.user = self.engine.user_manager.user('user1')
 
+        # Sanity check for a clean environment before each test
+        self.assert_no_projects()
+
+    def tearDown(self):
+        super(BaseFunctionalTestCase, self).tearDown()
+
+        all_projects = self.user.api.projects.list()
+        for p in all_projects:
+            self.user.api.projects.delete(p.name)
+
     def scenario(self, name):
         return self.engine.scenario_manager.scenario_by_name(name)
+
+    def assert_no_projects(self):
+        self.assert_projects_count(0)
+
+    def assert_projects_count(self, count):
+        all_projects = self.user.api.projects.list()
+        self.assertEqual(count, len(all_projects))
 
 
 def build_engine():

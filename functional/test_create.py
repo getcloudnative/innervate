@@ -21,11 +21,3 @@ class CreateProjectTests(base.BaseFunctionalTestCase):
         # Verify
         all_projects = self.user.api.projects.list()
         self.assertEqual(1, len(all_projects))
-
-    def tearDown(self):
-        super(CreateProjectTests, self).tearDown()
-
-        all_projects = self.user.api.projects.list()
-        for p in all_projects:
-            print('Deleting: %s' % p.name)
-            self.user.api.projects.delete(p.name)

@@ -41,5 +41,4 @@ class InnervateEngine(object):
         self.scenario_manager.load(self.config.scenarios)
 
     def run(self):
-        LOG.debug('Debug level comment')
-        LOG.info('Info level comment')
+        pass

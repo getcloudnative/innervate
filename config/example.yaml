@@ -18,6 +18,8 @@ scenarios:
       max_projects_per_user: 5
   - name: delete-project
     type: DeleteProject
+  - name: delete-service
+    type: DeleteService
 logging:
   version: 1
   formatters:

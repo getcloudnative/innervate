@@ -16,6 +16,7 @@ SCENARIO_CLASSES = {
     create.CreateProject.TYPE: create.CreateProject,
     create.CreateService.TYPE: create.CreateService,
     delete.DeleteProject.TYPE: delete.DeleteProject,
+    delete.DeleteService.TYPE: delete.DeleteService,
 }
 
 LOG = logging.getLogger(__name__)

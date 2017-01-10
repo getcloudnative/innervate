@@ -5,6 +5,7 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import logging.config
 import yaml
 
 from pykube import KubeConfig
@@ -19,6 +20,10 @@ class InnervateConfig(object):
     def load(self, filename):
         with open(filename) as f:
             self._config = yaml.load(f)
+        self._init_logging()
+
+    def _init_logging(self):
+        logging.config.dictConfig(self._config['logging'])
 
     @property
     def host(self):

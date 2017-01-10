@@ -24,8 +24,8 @@ class Scenario(object):
         self.name = name
         self.config = config
 
-        LOG.info('Loaded scenario "%s (%s)" with config: %s' %
-                 (self.name, self.__class__.__name__, self.config))
+        LOG.debug('Loaded scenario "%s (%s)" with config: %s' %
+                  (self.name, self.__class__.__name__, self.config))
 
     def __str__(self):
         return '[%s] %s' % (self.__class__.__name__, self.name)

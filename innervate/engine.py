@@ -11,7 +11,7 @@ from innervate.user import UserManager
 from innervate.scenario import ScenarioManager
 
 
-LOG = logging.getLogger(__name__)
+LOG = logging.getLogger('innervate_engine')
 
 
 class InnervateEngine(object):
@@ -39,3 +39,7 @@ class InnervateEngine(object):
         # Create and initialize the scenarios to be run
         self.scenario_manager = ScenarioManager()
         self.scenario_manager.load(self.config.scenarios)
+
+    def run(self):
+        LOG.debug('Debug level comment')
+        LOG.info('Info level comment')

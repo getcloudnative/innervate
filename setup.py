@@ -29,4 +29,10 @@ setup(
             'Intended Audience :: Information Technology',
             'Programming Language :: Python'
         ],
+
+        entry_points = {
+            'console_scripts': [
+                'innv = innervate.app:main'
+            ]
+        },
 )

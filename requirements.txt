@@ -1,4 +1,3 @@
-okaara
 requests
 pyyaml
 pykube

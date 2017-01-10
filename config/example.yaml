@@ -48,10 +48,10 @@ logging:
       filename: engine.log
   loggers:
     innervate:
-      level: DEBUG
+      level: INFO
       handlers:
         - console
-    innervate.engine:
+    innervate_engine:
       level: INFO
       handlers:
         - engine-console

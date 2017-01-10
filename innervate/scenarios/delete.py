@@ -71,5 +71,5 @@ class DeleteService(base.Scenario):
     @staticmethod
     def _select_random_service(all_services):
         all_services = [s for s in all_services]
-        service = random.random(all_services)
+        service = random.choice(all_services)
         return service

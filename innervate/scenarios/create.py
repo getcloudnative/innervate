@@ -67,9 +67,9 @@ class CreateService(base.Scenario):
     TYPE = 'CreateService'
 
     ALL_CONFIG_PROPS = (
-        NAME_PREFIX, IMAGE_LIST, MAX_SERVICES
+        NAME_PREFIX, IMAGE_LIST, MAX_SERVICES, PORTS,
     ) = (
-        'name_prefix', 'image_list', 'max_services_per_user'
+        'name_prefix', 'image_list', 'max_services_per_user', 'ports'
     )
 
     DEFAULT_MAX_SERVICES = 5
@@ -95,6 +95,11 @@ class CreateService(base.Scenario):
         # Randomly select an image
         image_name = self._select_random_image()
 
+        # Eventually replace this with an explicit entity for images that
+        # links the image name with its specific ports, but for now
+        # assume a single ports configuration for all of them
+        ports = self._select_ports()
+
         # Generate the service name
         name_prefix = self.config.get(self.NAME_PREFIX, 'inn-')
         service_name = name_prefix + base.random_name()
@@ -103,10 +108,16 @@ class CreateService(base.Scenario):
                   (service_name, project_name, image_name))
         user.api.services.create_from_image(service_name,
                                             image_name,
-                                            project_name=project_name)
+                                            project_name=project_name,
+                                            ports=ports)
 
-    @property
     def _select_random_image(self):
         il = self.config[self.IMAGE_LIST].split(',')
         image_name = random.choice(il)
         return image_name
+
+    def _select_ports(self):
+        config_ports = self.config[self.PORTS]
+        pieces = config_ports.split(':')
+        ports = [(int(pieces[0]), pieces[1])]
+        return ports

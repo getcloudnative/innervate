@@ -10,6 +10,7 @@ scenarios:
     type: CreateService
     config:
       image_list: kubernetes/guestbook
+      ports: 3000:TCP
       max_services_per_user: 3
   - name: create-project
     type: CreateProject

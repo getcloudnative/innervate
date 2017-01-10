@@ -32,6 +32,10 @@ class ProjectsAPI(object):
         super(ProjectsAPI, self).__init__()
         self.base_api = base_api
 
+    def get(self, name):
+        query = Project.objects(self.base_api.http_client)
+        return query.get_by_name(name)
+
     def list(self):
         return Project.objects(self.base_api.http_client)
 

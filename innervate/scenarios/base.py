@@ -58,7 +58,7 @@ class ValidationException(Exception):
 
 
 def select_random_project(user):
-    project_names = [p.name for p in user.api.list_projects()]
+    project_names = [p.name for p in user.api.projects.list()]
 
     if not project_names:
         raise NoOperation('The user [%s] has no existing projects' % user.username)

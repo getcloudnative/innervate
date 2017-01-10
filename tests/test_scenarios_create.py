@@ -83,5 +83,6 @@ class CreateServiceTests(base.BaseTestCase):
         # Verify
         self.mock_api.services.list.assert_called_once_with()
         self.mock_api.services.create_from_image.assert_called_once_with(
-            'inn-service1', 'image1', project_name='proj1')
+            'inn-service1', 'image1', project_name='proj1',
+            ports=[(3000, 'TCP')])
 

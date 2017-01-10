@@ -35,6 +35,9 @@ class DeleteProject(base.Scenario):
         LOG.debug('Deleting project [%s]' % doomed.name)
         user.api.projects.delete(doomed.name)
 
+        msg = 'Deleted project [%s]' % doomed.name
+        return base.ScenarioRunReport(msg, project_name=doomed.name)
+
     @staticmethod
     def _select_random_project(all_projects):
         all_projects = [p for p in all_projects]
@@ -67,6 +70,11 @@ class DeleteService(base.Scenario):
         LOG.debug('Deleting service [%s] from project [%s]' %
                   (doomed.name, p.name))
         user.api.services.delete(doomed.name, project_name=p.name)
+
+        msg = 'Deleted service [%s] from project [%s]' % (doomed.name, p.name)
+        return base.ScenarioRunReport(msg,
+                                      project_name=p.name,
+                                      service_name=doomed.name)
 
     @staticmethod
     def _select_random_service(all_services):

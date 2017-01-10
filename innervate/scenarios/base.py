@@ -45,6 +45,23 @@ class Scenario(object):
         pass
 
 
+class ScenarioRunReport(object):
+    """Describes the result of a single scenario execution.
+
+    This might be overkill, but I wanted a way for the engine to control
+    the logging of what actions it performs. I didn't like the idea of
+    simply returning a string from the scenario.run method, so this is
+    a very light wrapper with some more programmatically accessible
+    fields.
+    """
+
+    def __init__(self, msg, project_name=None, service_name=None):
+        super(ScenarioRunReport, self).__init__()
+        self.msg = msg
+        self.project_name = project_name
+        self.service_name = service_name
+
+
 class NoOperation(Exception):
     """Raised by a scenario when it is requested to run but, because of its
     configuration or the state of the user, the scenario takes no action.

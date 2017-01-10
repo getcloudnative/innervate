@@ -50,6 +50,9 @@ class CreateProject(base.Scenario):
         LOG.debug('Creating project [%s]' % project_name)
         user.api.projects.create(project_name)
 
+        msg = 'Created project [%s]' % project_name
+        return base.ScenarioRunReport(msg, project_name=project_name)
+
 
 class CreateService(base.Scenario):
     """Creates a new service.
@@ -110,6 +113,13 @@ class CreateService(base.Scenario):
                                             image_name,
                                             project_name=project_name,
                                             ports=ports)
+
+        msg = 'Created service [%s] in project [%s] using image [%s]' % (
+            service_name, project_name, image_name
+        )
+        return base.ScenarioRunReport(msg,
+                                      project_name=project_name,
+                                      service_name=service_name)
 
     def _select_random_image(self):
         il = self.config[self.IMAGE_LIST].split(',')

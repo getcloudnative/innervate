@@ -39,9 +39,12 @@ class CreateProjectTests(base.BaseTestCase):
         mock_name.return_value = 'proj1'
 
         # Test
-        self.scenario.run(self.mock_user)
+        report = self.scenario.run(self.mock_user)
 
         # Verify
+        self.assertTrue(isinstance(report, scenario_base.ScenarioRunReport))
+        self.assertEqual('inn-proj1', report.project_name)
+
         self.mock_api.projects.list.assert_called_once_with()
         self.mock_api.projects.create.assert_called_once_with('inn-proj1')
 
@@ -78,9 +81,13 @@ class CreateServiceTests(base.BaseTestCase):
         mock_name.return_value = 'service1'
 
         # Test
-        self.scenario.run(self.mock_user)
+        report = self.scenario.run(self.mock_user)
 
         # Verify
+        self.assertTrue(isinstance(report, scenario_base.ScenarioRunReport))
+        self.assertEqual('proj1', report.project_name)
+        self.assertEqual('inn-service1', report.service_name)
+
         self.mock_api.services.list.assert_called_once_with()
         self.mock_api.services.create_from_image.assert_called_once_with(
             'inn-service1', 'image1', project_name='proj1',

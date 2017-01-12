@@ -6,6 +6,8 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 import logging
+import random
+import time
 
 from innervate.user import UserManager
 from innervate.scenario import ScenarioManager
@@ -41,4 +43,21 @@ class InnervateEngine(object):
         self.scenario_manager.load(self.config.scenarios)
 
     def run(self):
-        pass
+
+        try:
+            while True:
+                sleep_min, sleep_max = self.config.scenario_sleep_range
+                sleep_for = random.randint(sleep_min, sleep_max)
+
+                # Do something
+                LOG.info('Running scenario')
+                LOG.info('Sleeping for [%s] before next scenario is run' % sleep_for)
+                time.sleep(sleep_for)
+
+        except KeyboardInterrupt:
+            # Gracefully exit
+            self.stop()
+
+    def stop(self):
+        LOG.info('Shutting down InnervateEngine')
+

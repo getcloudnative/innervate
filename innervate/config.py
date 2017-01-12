@@ -42,6 +42,12 @@ class InnervateConfig(object):
     def scenarios(self):
         return self._config['scenarios']
 
+    @property
+    def scenario_sleep_range(self):
+        value = self._config['engine']['scenario_sleep_range']
+        values = value.split('-')
+        return int(values[0]), int(values[1])
+
     def scenarios_for_type(self, type_name):
         x = [c for c in self.scenarios if c['type'] == type_name]
         return x

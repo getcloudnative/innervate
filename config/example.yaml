@@ -6,7 +6,7 @@ users:
   - username: user2
     password: user2
 engine:
-  scenario_sleep_range: 10-60  # in seconds
+  scenario_sleep_range: 10-30  # in seconds
 scenarios:
   - name: create-service
     type: CreateService
@@ -31,6 +31,7 @@ logging:
       format: "%(asctime)s %(levelname)-8s %(name)-12s: %(message)s"
     engine:
       format: "%(asctime)s: %(message)s"
+      datefmt: "%m/%d/%Y %I:%M:%S"
   handlers:
     console:
       class: logging.StreamHandler

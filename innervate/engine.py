@@ -161,9 +161,19 @@ class InnervateEngine(object):
             for p in u_projects:
                 LOG.info('  Deleting Project: %s' % p.name)
                 u.api.projects.delete(p.name)
-        LOG.info('Deletions have been requested but may not necessarily '
-                 'have completed yet. It may take upwards of a few minutes '
-                 'to finish all of the requested deletions.')
+
+        while True:
+            LOG.info('Waiting for projects to be deleted...')
+            total_projects = 0
+            for u in self.user_manager.iterator():
+                u_projects = u.api.projects.list()
+                total_projects += len(u_projects)
+
+            if total_projects == 0:
+                LOG.info('Project clean up complete')
+                break
+            else:
+                time.sleep(5)
 
     def stop(self):
         LOG.info('Shutting down InnervateEngine')

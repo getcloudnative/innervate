@@ -150,9 +150,26 @@ class InnervateEngine(object):
                     LOG.info('    Service: %s (Count: %s)' %
                              (s.name, replicas))
 
+    def cleanup(self):
+        """Deletes all projects for each configured user."""
+
+        LOG.info('Cleaning up user accounts')
+        for u in self.user_manager.iterator():
+            LOG.info('User: %s' % u.username)
+
+            u_projects = u.api.projects.list()
+            for p in u_projects:
+                LOG.info('  Deleting Project: %s' % p.name)
+                u.api.projects.delete(p.name)
+        LOG.info('Deletions have been requested but may not necessarily '
+                 'have completed yet. It may take upwards of a few minutes '
+                 'to finish all of the requested deletions.')
+
     def stop(self):
         LOG.info('Shutting down InnervateEngine')
-
+        LOG.info('Auto Clean: %s' % self.config.auto_clean)
+        if self.config.auto_clean:
+            self.cleanup()
 
 class NoScenariosExecuted(Exception):
     pass

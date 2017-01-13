@@ -8,6 +8,7 @@ users:
 engine:
   scenario_sleep_range: 5-20  # in seconds
   log_state_every: 5  # number of scenarios executed
+  auto_clean: true  # if true, each user account will have all projects deleted on exit
 scenarios:
   - name: create-service
     type: CreateService

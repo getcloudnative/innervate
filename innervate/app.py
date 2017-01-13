@@ -28,6 +28,8 @@ def main(args=None):
 
     if options.state:
         engine.log_current_state()
+    elif options.clean:
+        engine.cleanup()
     else:
         engine.run()
 
@@ -37,6 +39,8 @@ def parse_args(args):
     parser.add_option('-s', '--state', dest='state', action='store_true',
                       help='Log the current state of each configured user\'s'
                            'account')
+    parser.add_option('-c', '--clean', dest='clean', action='store_true',
+                      help='Delete all projects for the configured users')
     options, args = parser.parse_args(args)
     return options
 

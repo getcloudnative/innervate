@@ -56,6 +56,10 @@ class InnervateConfig(object):
         else:
             return None
 
+    @property
+    def auto_clean(self):
+        return self._config['engine'].get('auto_clean', False)
+
     def scenarios_for_type(self, type_name):
         x = [c for c in self.scenarios if c['type'] == type_name]
         return x

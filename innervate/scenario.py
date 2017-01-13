@@ -74,6 +74,10 @@ class ScenarioManager(object):
         else:
             return None
 
+    def iterator(self):
+        for s in self.scenarios:
+            yield s
+
     def _instantiate_scenario(self, name, type_name, config):
         scenario_class = self.scenario_classes.get(type_name, None)
         if scenario_class is None:

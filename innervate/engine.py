@@ -44,6 +44,16 @@ class InnervateEngine(object):
         self.scenario_manager = ScenarioManager()
         self.scenario_manager.load(self.config.scenarios)
 
+        # Log the state of the configured engine
+        LOG.info('Engine Configuration:')
+        LOG.info('Users:')
+        for u in self.user_manager.iterator():
+            LOG.info('  %s' % u.username)
+        LOG.info('Scenarios:')
+        for s in self.scenario_manager.iterator():
+            LOG.info('  %s (%s)' % (s.name, s.TYPE))
+        LOG.info('=' * 20)
+
     def run(self):
 
         try:

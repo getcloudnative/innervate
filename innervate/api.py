@@ -151,3 +151,8 @@ class ServicesAPI(object):
         rc = self.list_rc(service_name, project_name=project_name).get()
         rc.obj['spec']['replicas'] = new_replicas
         rc.update()
+
+    def get_replica_count(self, service_name, project_name):
+        project_name = project_name or self.base_api.current_project
+        rc = self.list_rc(service_name, project_name=project_name).get()
+        return rc.obj['spec']['replicas']

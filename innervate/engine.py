@@ -47,6 +47,7 @@ class InnervateEngine(object):
     def run(self):
 
         try:
+            counter = 0
             while True:
                 sleep_min, sleep_max = self.config.scenario_sleep_range
                 sleep_for = random.randint(sleep_min, sleep_max)
@@ -74,8 +75,14 @@ class InnervateEngine(object):
 
                 LOG.info('-' * 20)
 
-                LOG.info('Sleeping for %s seconds before next scenario is run' %
-                         sleep_for)
+                if (self.config.log_state_every and
+                    counter % self.config.log_state_every == 0):
+                    LOG.info('Current State:')
+                    self.log_current_state()
+                counter += 1
+
+                LOG.info('Sleeping for %s seconds before the next scenario '
+                         'is run' % sleep_for)
                 time.sleep(sleep_for)
 
         except KeyboardInterrupt:
@@ -119,6 +126,23 @@ class InnervateEngine(object):
     def _choose_user(users):
         # Wrapper method to ease mocking in tests
         return random.choice(users)
+
+    def log_current_state(self):
+        """Logs the current state of each user's projects."""
+
+        for u in self.user_manager.iterator():
+            LOG.info('User: %s' % u.username)
+
+            u_projects = u.api.projects.list()
+            for p in u_projects:
+                LOG.info('  Project: %s' % p.name)
+
+                services = u.api.services.list(project_name=p.name)
+                for s in services:
+                    replicas = u.api.services.get_replica_count(
+                        s.name, project_name=p.name)
+                    LOG.info('    Service: %s (Count: %s)' %
+                             (s.name, replicas))
 
     def stop(self):
         LOG.info('Shutting down InnervateEngine')

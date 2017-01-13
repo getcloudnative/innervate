@@ -48,6 +48,14 @@ class InnervateConfig(object):
         values = value.split('-')
         return int(values[0]), int(values[1])
 
+    @property
+    def log_state_every(self):
+        value = self._config['engine'].get('log_state_every', None)
+        if value:
+            return int(value)
+        else:
+            return None
+
     def scenarios_for_type(self, type_name):
         x = [c for c in self.scenarios if c['type'] == type_name]
         return x

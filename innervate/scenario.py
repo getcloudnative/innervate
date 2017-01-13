@@ -8,7 +8,7 @@
 import copy
 import logging
 
-from scenarios import (base, create, delete)
+from scenarios import (base, create, delete, scale)
 
 
 SCENARIO_CLASSES = {
@@ -16,6 +16,7 @@ SCENARIO_CLASSES = {
     create.CreateService.TYPE: create.CreateService,
     delete.DeleteProject.TYPE: delete.DeleteProject,
     delete.DeleteService.TYPE: delete.DeleteService,
+    scale.ScaleUp.TYPE: scale.ScaleUp,
 }
 
 LOG = logging.getLogger(__name__)

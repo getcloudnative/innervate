@@ -23,6 +23,11 @@ scenarios:
     weight: 2
     config:
       max_projects_per_user: 5
+  - name: scale-service-up
+    type: ScaleUp
+    weight: 3
+    config:
+      max_pods_per_service: 5
   - name: delete-project
     type: DeleteProject
   - name: delete-service

@@ -86,19 +86,21 @@ class ScenarioManagerTests(base.BaseTestCase):
     def test_instantiate_scenario(self):
         # Setup
         class FakeScenarioType(object):
-            def __init__(self, name, config):
+            def __init__(self, name, weight, config):
                 self.name = name
+                self.weight = weight
                 self.config = config
 
         self.manager.scenario_classes.clear()
         self.manager.scenario_classes['type1'] = FakeScenarioType
 
         # Test
-        created = self.manager._instantiate_scenario('name1', 'type1', {})
+        created = self.manager._instantiate_scenario('name1', 'type1', 1, {})
 
         # Verify
         self.assertTrue(isinstance(created, FakeScenarioType))
         self.assertEqual('name1', created.name)
+        self.assertEqual(1, created.weight)
         self.assertEqual({}, created.config)
 
     @staticmethod

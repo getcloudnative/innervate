@@ -48,8 +48,10 @@ class ScenarioManager(object):
             type_name = scenario_desc['type']
             name = scenario_desc['name']
             config = scenario_desc.get('config', {})
+            weight = int(scenario_desc.get('weight', 1))
 
-            scenario = self._instantiate_scenario(name, type_name, config)
+            scenario = self._instantiate_scenario(name, type_name,
+                                                  weight, config)
 
             try:
                 scenario.validate()
@@ -78,11 +80,11 @@ class ScenarioManager(object):
         for s in self.scenarios:
             yield s
 
-    def _instantiate_scenario(self, name, type_name, config):
+    def _instantiate_scenario(self, name, type_name, weight, config):
         scenario_class = self.scenario_classes.get(type_name, None)
         if scenario_class is None:
             raise Exception('Scenario type must be one of "%s"' %
                             ','.join(self.scenario_classes.keys()))
 
-        scenario = scenario_class(name, config)
+        scenario = scenario_class(name, weight, config)
         return scenario

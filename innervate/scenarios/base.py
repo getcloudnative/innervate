@@ -20,8 +20,9 @@ class Scenario(object):
 
     ALL_CONFIG_PROPS = []
 
-    def __init__(self, name, config):
+    def __init__(self, name, weight, config):
         self.name = name
+        self.weight = weight
         self.config = config
 
         LOG.debug('Loaded scenario "%s (%s)" with config: %s' %

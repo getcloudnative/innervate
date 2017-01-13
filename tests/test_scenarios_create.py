@@ -20,7 +20,7 @@ class CreateProjectTests(base.BaseTestCase):
 
         self.s_config = self.config.scenarios_for_type(
             create.CreateProject.TYPE)[0]['config']
-        self.scenario = create.CreateProject('create1', self.s_config)
+        self.scenario = create.CreateProject('create1', 1, self.s_config)
 
     def test_run_noop(self):
         # Setup
@@ -56,7 +56,7 @@ class CreateServiceTests(base.BaseTestCase):
 
         self.s_config = self.config.scenarios_for_type(
             create.CreateService.TYPE)[0]['config']
-        self.scenario = create.CreateService('create1', self.s_config)
+        self.scenario = create.CreateService('create1', 1, self.s_config)
 
     @mock.patch('innervate.scenarios.base.select_random_project')
     def test_run_noop(self, mock_select):

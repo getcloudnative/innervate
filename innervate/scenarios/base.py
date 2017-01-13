@@ -78,7 +78,7 @@ def select_random_project(user):
     project_names = [p.name for p in user.api.projects.list()]
 
     if not project_names:
-        raise NoOperation('The user has no existing projects' % user.username)
+        raise NoOperation('The user has no existing projects')
 
     project_name = random.choice(project_names)
     user.api.current_project = project_name

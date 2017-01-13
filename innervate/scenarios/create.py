@@ -70,14 +70,12 @@ class CreateService(base.Scenario):
     TYPE = 'CreateService'
 
     ALL_CONFIG_PROPS = (
-        NAME_PREFIX, IMAGE_LIST, MAX_SERVICES, PORTS,
+        NAME_PREFIX, IMAGES, MAX_SERVICES,
     ) = (
-        'name_prefix', 'image_list', 'max_services_per_user', 'ports'
+        'name_prefix', 'images', 'max_services_per_user',
     )
 
     DEFAULT_MAX_SERVICES = 5
-
-    # TODO: Add configuration properties for route creation (bool, port, etc.)
 
     def validate(self):
         super(CreateService, self).validate()
@@ -96,12 +94,9 @@ class CreateService(base.Scenario):
             raise base.NoOperation(msg % max_services)
 
         # Randomly select an image
-        image_name = self._select_random_image()
-
-        # Eventually replace this with an explicit entity for images that
-        # links the image name with its specific ports, but for now
-        # assume a single ports configuration for all of them
-        ports = self._select_ports()
+        image_data = self._select_random_image()
+        image_name = image_data['name']
+        ports = self._parse_ports(image_data['ports'])
 
         # Generate the service name
         name_prefix = self.config.get(self.NAME_PREFIX, 'inn-')
@@ -122,12 +117,11 @@ class CreateService(base.Scenario):
                                       service_name=service_name)
 
     def _select_random_image(self):
-        il = self.config[self.IMAGE_LIST].split(',')
-        image_name = random.choice(il)
-        return image_name
+        image_data = random.choice(self.config[self.IMAGES])  # dict of data
+        return image_data
 
-    def _select_ports(self):
-        config_ports = self.config[self.PORTS]
-        pieces = config_ports.split(':')
+    @staticmethod
+    def _parse_ports(ports):
+        pieces = ports.split(':')
         ports = [(int(pieces[0]), pieces[1])]
         return ports

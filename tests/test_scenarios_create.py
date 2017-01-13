@@ -76,7 +76,10 @@ class CreateServiceTests(base.BaseTestCase):
     @mock.patch('innervate.scenarios.base.random_name')
     def test_run(self, mock_name, mock_select_proj, mock_select_image):
         # Setup
-        mock_select_image.return_value = 'image1'
+        mock_select_image.return_value = {
+            'name': 'image1',
+            'ports': '3000:TCP',
+        }
         mock_select_proj.return_value = 'proj1'
         mock_name.return_value = 'service1'
 

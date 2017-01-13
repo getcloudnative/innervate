@@ -5,6 +5,7 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+from optparse import OptionParser
 import sys
 
 from innervate.config import InnervateConfig
@@ -16,13 +17,28 @@ def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
+    options = parse_args(args)
+
     config = InnervateConfig()
     # TODO: Make a better reference to this
     config.load('config/example.yaml')
 
     engine = InnervateEngine(config)
     engine.initialize()
-    engine.run()
+
+    if options.state:
+        engine.log_current_state()
+    else:
+        engine.run()
+
+
+def parse_args(args):
+    parser = OptionParser()
+    parser.add_option('-s', '--state', dest='state', action='store_true',
+                      help='Log the current state of each configured user\'s'
+                           'account')
+    options, args = parser.parse_args(args)
+    return options
 
 
 if __name__ == '__main__':

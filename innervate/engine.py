@@ -52,6 +52,18 @@ class InnervateEngine(object):
                 sleep_min, sleep_max = self.config.scenario_sleep_range
                 sleep_for = random.randint(sleep_min, sleep_max)
 
+                # Log the state before running the scenario in case the
+                # scenario is a delete; there is a possible race condition
+                # where the deleted project will appear in the list but
+                # not be accessible when looking up the services (because it's
+                # in the process of being deleted), so it's simpler to log
+                # it now and not even worry about it.
+                if (self.config.log_state_every and
+                    counter % self.config.log_state_every == 0):
+                    LOG.info('Current State:')
+                    self.log_current_state()
+                counter += 1
+
                 LOG.info('-' * 20)
 
                 while True:
@@ -74,12 +86,6 @@ class InnervateEngine(object):
                     LOG.info('No users were able to execute any scenarios')
 
                 LOG.info('-' * 20)
-
-                if (self.config.log_state_every and
-                    counter % self.config.log_state_every == 0):
-                    LOG.info('Current State:')
-                    self.log_current_state()
-                counter += 1
 
                 LOG.info('Sleeping for %s seconds before the next scenario '
                          'is run' % sleep_for)

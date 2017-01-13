@@ -7,7 +7,6 @@
 
 import copy
 import logging
-import random
 
 from scenarios import (base, create, delete)
 
@@ -65,36 +64,6 @@ class ScenarioManager(object):
 
             self.scenarios.append(scenario)
 
-    def run_random_scenario(self, user):
-        """Attempt to run a random scenario.
-
-        If the chosen scenario reports that it does not run, remove it from
-        the possibilities and try again with another random scenario. Once
-        all of those options have been exhausted, simply exit. I might need
-        to change that behavior in the future, but for now it is simply logged.
-        """
-        if not self.scenarios:
-            raise Exception('Scenarios must be loaded using '
-                            'the "initialize" call')
-
-        execution_scenarios = copy.copy(self.scenarios)
-        while execution_scenarios:
-            scenario = self._choose_scenario(execution_scenarios)
-            try:
-                scenario.run(user)
-            except base.NoOperation as e:
-                # Remove this scenario from the possible scenarios and attempt to
-                # try another
-                LOG.info('Skipping scenario [%s]: %s' % (scenario.name, e.message))
-                execution_scenarios.remove(scenario)
-            else:
-                break
-        else:
-            # We ran out of scenarios and none executed. This isn't an error per se, but
-            # it likely means that without user intervention, subsequent attempts to
-            # run the scenario set again will not produce any results.
-            LOG.info('No scenarios found to execute for user [%s]' % user)
-
     def scenario_by_name(self, name):
         # This won't usually be called and the rest of the methods are
         # simpler using a list instead of a dict, so I'm not too worried about
@@ -113,7 +82,3 @@ class ScenarioManager(object):
 
         scenario = scenario_class(name, config)
         return scenario
-
-    @staticmethod
-    def _choose_scenario(scenarios):
-        return random.choice(scenarios)

@@ -83,45 +83,6 @@ class ScenarioManagerTests(base.BaseTestCase):
 
         self.assertEqual([mock_1], self.manager.scenarios)
 
-    def test_run_random_scenario(self):
-        # Setup
-        mock_1, mock_2 = mock.MagicMock(), mock.MagicMock()
-        mock_user = mock.MagicMock()
-        self.manager.scenarios.extend([mock_1, mock_2])
-
-        # Test
-        self.manager.run_random_scenario(mock_user)
-
-        # Verify
-        self.assertTrue(bool(mock_1.run.call_count > 0) ^
-                        bool(mock_2.run.call_count > 0))
-        if mock_1.run.call_count:
-            mock_1.run.assert_called_once_with(mock_user)
-        if mock_2.run.call_count:
-            mock_2.run.assert_called_once_with(mock_user)
-
-    def test_run_random_scenario_no_load(self):
-        self.assertRaises(Exception,
-                          self.manager.run_random_scenario, None)
-
-    @mock.patch('innervate.scenario.ScenarioManager._choose_scenario')
-    def test_run_random_scenario_with_noop(self, mock_choose):
-        # Setup
-        mock_1, mock_2 = mock.MagicMock(), mock.MagicMock()
-        mock_1.run.side_effect = scenario_base.NoOperation()
-
-        self.manager.scenarios.extend([mock_1, mock_2])
-        mock_choose.side_effect = [mock_1, mock_2]
-
-        mock_user = mock.MagicMock()
-
-        # Test
-        self.manager.run_random_scenario(mock_user)
-
-        # Verify
-        mock_1.run.assert_called_once_with(mock_user)
-        mock_2.run.assert_called_once_with(mock_user)
-
     def test_instantiate_scenario(self):
         # Setup
         class FakeScenarioType(object):

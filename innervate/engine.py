@@ -5,8 +5,10 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import copy
 import logging
 import random
+from scenarios import base
 import time
 
 from innervate.user import UserManager
@@ -49,8 +51,11 @@ class InnervateEngine(object):
                 sleep_min, sleep_max = self.config.scenario_sleep_range
                 sleep_for = random.randint(sleep_min, sleep_max)
 
-                # Do something
-                LOG.info('Running scenario')
+                LOG.info('-' * 20)
+                user = self.user_manager.random_user()
+                self.run_random_scenario(user)
+                LOG.info('-' * 20)
+
                 LOG.info('Sleeping for [%s] before next scenario is run' % sleep_for)
                 time.sleep(sleep_for)
 
@@ -58,6 +63,39 @@ class InnervateEngine(object):
             # Gracefully exit
             self.stop()
 
+    def run_random_scenario(self, user):
+        """Attempt to run a random scenario.
+
+        If the chosen scenario reports that it does not run, remove it from
+        the possibilities and try again with another random scenario. Once
+        all of those options have been exhausted, simply exit. I might need
+        to change that behavior in the future, but for now it is simply logged.
+        """
+        execution_scenarios = copy.copy(self.scenario_manager.scenarios)
+        while execution_scenarios:
+            scenario = self._choose_scenario(execution_scenarios)
+            try:
+                result = scenario.run(user)
+                LOG.info(result.msg)
+            except base.NoOperation as e:
+                # Remove this scenario from the possible scenarios and attempt to
+                # try another
+                LOG.info('Skipping scenario [%s]: %s' % (scenario.name, e.message))
+                execution_scenarios.remove(scenario)
+            else:
+                break
+        else:
+            # We ran out of scenarios and none executed. This isn't an error per se, but
+            # it likely means that without user intervention, subsequent attempts to
+            # run the scenario set again will not produce any results.
+            LOG.info('No scenarios found to execute for user [%s]' % user)
+
+    @staticmethod
+    def _choose_scenario(scenarios):
+        return random.choice(scenarios)
+
     def stop(self):
         LOG.info('Shutting down InnervateEngine')
+
+
 

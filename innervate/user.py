@@ -7,6 +7,7 @@
 
 import logging
 import pykube
+import random
 
 from .api import OpenShiftAPI
 from .config import PykubeConfig
@@ -46,6 +47,9 @@ class UserManager(object):
 
     def user(self, username):
         return self.users[username]
+
+    def random_user(self):
+        return random.choice(self.users.values())
 
     def iterator(self):
         for u in self.users.values():

@@ -61,8 +61,11 @@ class ScaleUp(base.Scenario):
                 if current_count < max_pods:
                     new_count = current_count + 1
                     user.api.services.scale(s, new_count, project_name=p)
-                    msg = 'Scaled service [%s] in project [%s] to [%s] pods'
-                    return msg % (s, p, new_count)
+                    msg = 'Scaled service [%s] in project [%s] to ' \
+                          '[%s] pods' % (s, p, new_count)
+                    return base.ScenarioRunReport(msg,
+                                                  project_name=p,
+                                                  service_name=s)
         else:
             # If we got here, no projects had any services that could be
             # scaled, so this is a noop

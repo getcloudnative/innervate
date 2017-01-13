@@ -83,7 +83,7 @@ class CreateService(base.Scenario):
 
     def run(self, user):
 
-        # Randomly select a project before looking fro services
+        # Randomly select a project before looking for services
         project_name = base.select_random_project(user)
 
         # Sanity check to skip this scenario if no more services can be created

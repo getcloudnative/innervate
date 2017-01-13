@@ -51,6 +51,10 @@ class UserManager(object):
     def random_user(self):
         return random.choice(self.users.values())
 
+    @property
+    def all_users(self):
+        return self.users.values()
+
     def iterator(self):
         for u in self.users.values():
             yield u

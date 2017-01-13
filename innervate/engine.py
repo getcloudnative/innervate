@@ -52,11 +52,30 @@ class InnervateEngine(object):
                 sleep_for = random.randint(sleep_min, sleep_max)
 
                 LOG.info('-' * 20)
-                user = self.user_manager.random_user()
-                self.run_random_scenario(user)
+
+                while True:
+                    execution_users = copy.copy(self.user_manager.all_users)
+                    try:
+                        user = self._choose_user(execution_users)
+                        LOG.info('Running scenario for user [%s]' %
+                                 user.username)
+                        self.run_random_scenario(user)
+                        break
+                    except NoScenariosExecuted:
+                        # Nothing to do for this user, try another
+                        LOG.info('No scenarios were able to be executed by'
+                                 'user [%s]' % user.username)
+                        execution_users.remove(user)
+                else:
+                    # The break was never hit, which meant there was nothing
+                    # done. This shouldn't happen unless there is a grossly
+                    # misconfigured set of scenarios
+                    LOG.info('No users were able to execute any scenarios')
+
                 LOG.info('-' * 20)
 
-                LOG.info('Sleeping for [%s] before next scenario is run' % sleep_for)
+                LOG.info('Sleeping for %s seconds before next scenario is run' %
+                         sleep_for)
                 time.sleep(sleep_for)
 
         except KeyboardInterrupt:
@@ -89,13 +108,21 @@ class InnervateEngine(object):
             # it likely means that without user intervention, subsequent attempts to
             # run the scenario set again will not produce any results.
             LOG.info('No scenarios found to execute for user [%s]' % user)
+            raise NoScenariosExecuted()
 
     @staticmethod
     def _choose_scenario(scenarios):
+        # Wrapper method to ease mocking in tests
         return random.choice(scenarios)
+
+    @staticmethod
+    def _choose_user(users):
+        # Wrapper method to ease mocking in tests
+        return random.choice(users)
 
     def stop(self):
         LOG.info('Shutting down InnervateEngine')
 
 
-
+class NoScenariosExecuted(Exception):
+    pass

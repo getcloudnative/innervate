@@ -72,7 +72,7 @@ class CreateService(base.Scenario):
     ALL_CONFIG_PROPS = (
         NAME_PREFIX, IMAGES, MAX_SERVICES,
     ) = (
-        'name_prefix', 'images', 'max_services_per_user',
+        'name_prefix', 'images', 'max_services_per_project',
     )
 
     DEFAULT_MAX_SERVICES = 5

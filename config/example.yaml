@@ -12,13 +12,15 @@ engine:
 scenarios:
   - name: create-service
     type: CreateService
+    weight: 2
     config:
       images:
         - name: kubernetes/guestbook
           ports: 3000:TCP
-      max_services_per_user: 3
+      max_services_per_project: 3
   - name: create-project
     type: CreateProject
+    weight: 2
     config:
       max_projects_per_user: 5
   - name: delete-project

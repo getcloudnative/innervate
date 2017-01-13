@@ -181,5 +181,6 @@ class InnervateEngine(object):
         if self.config.auto_clean:
             self.cleanup()
 
+
 class NoScenariosExecuted(Exception):
     pass

@@ -55,3 +55,25 @@ class InnervateEngineTests(base.BaseTestCase):
         # Verify
         mock_1.run.assert_called_once_with(mock_user)
         mock_2.run.assert_called_once_with(mock_user)
+
+    def test_expand_scenarios(self):
+        # Setup
+        s1 = mock.MagicMock()
+        s1.name = 's1'
+        s1.weight = 2
+        s2 = mock.MagicMock()
+        s2.name = 's2'
+        s2.weight = 1
+
+        self.engine.scenario_manager.scenarios = [s1, s2]
+
+        # Test
+        x = self.engine._expand_scenarios()
+
+        # Verify
+        self.assertEqual(3, len(x))
+        self.assertEqual(2, len([y for y in x if y.name == 's1']))
+        self.assertEqual(1, len([y for y in x if y.name == 's2']))
+
+
+

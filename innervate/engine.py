@@ -51,7 +51,8 @@ class InnervateEngine(object):
             LOG.info('  %s' % u.username)
         LOG.info('Scenarios:')
         for s in self.scenario_manager.iterator():
-            LOG.info('  %s (%s)' % (s.name, s.TYPE))
+            LOG.info('  %s :: Type: %s :: Weight: %s' %
+                     (s.name, s.TYPE, s.weight))
         LOG.info('=' * 20)
 
     def run(self):
@@ -113,17 +114,23 @@ class InnervateEngine(object):
         all of those options have been exhausted, simply exit. I might need
         to change that behavior in the future, but for now it is simply logged.
         """
-        execution_scenarios = copy.copy(self.scenario_manager.scenarios)
+        execution_scenarios = self._expand_scenarios()
         while execution_scenarios:
             scenario = self._choose_scenario(execution_scenarios)
             try:
                 result = scenario.run(user)
                 LOG.info(result.msg)
             except base.NoOperation as e:
-                # Remove this scenario from the possible scenarios and attempt to
-                # try another
-                LOG.info('Skipping scenario [%s]: %s' % (scenario.name, e.message))
-                execution_scenarios.remove(scenario)
+                # Remove this scenario from the possible scenarios and attempt
+                # to try another
+                LOG.info('Skipping scenario [%s]: %s' % (scenario.name,
+                                                         e.message))
+
+                # Remove all copies of the skipped scenario (copies may occur
+                # for weights > 1)
+                for e in execution_scenarios:
+                    if e.name == scenario.name:
+                        execution_scenarios.remove(e)
             else:
                 break
         else:
@@ -132,6 +139,14 @@ class InnervateEngine(object):
             # run the scenario set again will not produce any results.
             LOG.info('No scenarios found to execute for user [%s]' % user)
             raise NoScenariosExecuted()
+
+    def _expand_scenarios(self):
+        """Creates a copy of the scenarios list and applies the scenario
+        weights."""
+        scenarios = []
+        for s in self.scenario_manager.iterator():
+            scenarios.extend([s for x in range(0, s.weight)])
+        return scenarios
 
     @staticmethod
     def _choose_scenario(scenarios):

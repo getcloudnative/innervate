@@ -6,7 +6,7 @@ users:
   - username: user2
     password: user2
 engine:
-  scenario_sleep_range: 10-30  # in seconds
+  scenario_sleep_range: 5-20  # in seconds
 scenarios:
   - name: create-service
     type: CreateService

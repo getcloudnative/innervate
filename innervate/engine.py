@@ -70,7 +70,7 @@ class InnervateEngine(object):
                 # in the process of being deleted), so it's simpler to log
                 # it now and not even worry about it.
                 if (self.config.log_state_every and
-                    counter % self.config.log_state_every == 0):
+                        counter % self.config.log_state_every == 0):
                     LOG.info('Current State:')
                     self.log_current_state()
                 counter += 1
@@ -134,9 +134,10 @@ class InnervateEngine(object):
             else:
                 break
         else:
-            # We ran out of scenarios and none executed. This isn't an error per se, but
-            # it likely means that without user intervention, subsequent attempts to
-            # run the scenario set again will not produce any results.
+            # We ran out of scenarios and none executed. This isn't an error
+            # per se, but it likely means that without user intervention,
+            # subsequent attempts to run the scenario set again will not
+            # produce any results.
             LOG.info('No scenarios found to execute for user [%s]' % user)
             raise NoScenariosExecuted()
 

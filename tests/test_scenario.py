@@ -29,7 +29,7 @@ class ScenarioManagerTests(base.BaseTestCase):
         m.load(self.config.scenarios)
 
         # Verify
-        self.assertEqual(5, len(m.scenarios))
+        self.assertEqual(6, len(m.scenarios))
 
     @mock.patch('innervate.scenario.ScenarioManager._instantiate_scenario')
     def test_load(self, mock_inst):

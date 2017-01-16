@@ -115,22 +115,24 @@ class InnervateEngine(object):
         to change that behavior in the future, but for now it is simply logged.
         """
         execution_scenarios = self._expand_scenarios()
+        skipped_scenario_names = []
         while execution_scenarios:
             scenario = self._choose_scenario(execution_scenarios)
+
+            if scenario.name in skipped_scenario_names:
+                continue
+
             try:
                 result = scenario.run(user)
                 LOG.info(result.msg)
             except base.NoOperation as e:
-                # Remove this scenario from the possible scenarios and attempt
-                # to try another
+                # The scenario might appear multiple times depending on the
+                # weights assigned, so keep track of ones we've skipped in
+                # the past and try another
                 LOG.info('Skipping scenario [%s]: %s' % (scenario.name,
                                                          e.message))
+                skipped_scenario_names.append(scenario.name)
 
-                # Remove all copies of the skipped scenario (copies may occur
-                # for weights > 1)
-                for e in execution_scenarios:
-                    if e.name == scenario.name:
-                        execution_scenarios.remove(e)
             else:
                 break
         else:

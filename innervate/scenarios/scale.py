@@ -14,26 +14,16 @@ from . import base
 LOG = logging.getLogger(__name__)
 
 
-class ScaleUp(base.Scenario):
-    """Scales a random service up.
+class ScaleScenario(base.Scenario):
+    """Base functionality for scaling a service. """
 
-    Configuration:
+    def __init__(self, name, weight, config, f_test, f_adjust):
+        super(ScaleScenario, self).__init__(name, weight, config)
 
-    * max_pods_per_service: maximum number of pods to scale to
-    """
-
-    TYPE = 'ScaleUp'
-
-    ALL_CONFIG_PROPS = (
-        MAX_PODS,
-    ) = (
-        'max_pods_per_service',
-    )
-
-    DEFAULT_MAX_PODS = 10
+        self.f_test = f_test
+        self.f_adjust = f_adjust
 
     def run(self, user):
-        max_pods = self.config.get(self.MAX_PODS, self.DEFAULT_MAX_PODS)
 
         # Collect all project names to look through
         project_names = [p.name for p in user.api.projects.list()]
@@ -58,8 +48,8 @@ class ScaleUp(base.Scenario):
                 current_count = user.api.services.get_replica_count(
                     s, project_name=p)
 
-                if current_count < max_pods:
-                    new_count = current_count + 1
+                if self.f_test(current_count):
+                    new_count = self.f_adjust(current_count)
                     user.api.services.scale(s, new_count, project_name=p)
                     msg = 'Scaled service [%s] in project [%s] to ' \
                           '[%s] pods' % (s, p, new_count)
@@ -72,8 +62,44 @@ class ScaleUp(base.Scenario):
             raise base.NoOperation('No services eligible for scaling')
 
 
+class ScaleUp(ScaleScenario):
+    """Scales a service up.
+
+    Configuration:
+
+    * max_pods_per_service: maximum number of pods to scale to
+    """
+
+    TYPE = 'ScaleUp'
+
+    ALL_CONFIG_PROPS = (
+        MAX_PODS,
+    ) = (
+        'max_pods_per_service',
+    )
+
+    DEFAULT_MAX_PODS = 10
+
+    def __init__(self, name, weight, config):
+        max_pods = config.get(self.MAX_PODS, self.DEFAULT_MAX_PODS)
+
+        def test(x): return x < max_pods
+
+        def change(x): return x + 1
+
+        super(ScaleUp, self).__init__(name, weight, config, test, change)
 
 
+class ScaleDown(ScaleScenario):
+    """Scales a service down (but not to zero)."""
 
+    TYPE = 'ScaleDown'
 
+    def __init__(self, name, weight, config):
+
+        def test(x): return x > 0
+
+        def change(x): return x - 1
+
+        super(ScaleDown, self).__init__(name, weight, config, test, change)
 

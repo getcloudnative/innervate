@@ -17,6 +17,7 @@ SCENARIO_CLASSES = {
     delete.DeleteProject.TYPE: delete.DeleteProject,
     delete.DeleteService.TYPE: delete.DeleteService,
     scale.ScaleUp.TYPE: scale.ScaleUp,
+    scale.ScaleDown.TYPE: scale.ScaleDown,
 }
 
 LOG = logging.getLogger(__name__)

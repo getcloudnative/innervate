@@ -12,7 +12,7 @@ import base
 
 class ScaleServiceTests(base.BaseFunctionalTestCase):
 
-    def test_scale(self):
+    def test_scale_up(self):
         # Setup
         create_p = self.scenario('create-project')
         create_p.run(self.user)
@@ -20,7 +20,7 @@ class ScaleServiceTests(base.BaseFunctionalTestCase):
 
         create_s = self.scenario('create-service')
         create_s.run(self.user)
-        time.sleep(3)
+        time.sleep(5)
 
         # Test
         scale_s = self.scenario('scale-service-up')
@@ -36,3 +36,35 @@ class ScaleServiceTests(base.BaseFunctionalTestCase):
                                                                  project.name)
         self.assertEqual(3, replica_count)
 
+    def test_scale_down(self):
+        # Setup
+        create_p = self.scenario('create-project')
+        create_p.run(self.user)
+        time.sleep(3)
+
+        create_s = self.scenario('create-service')
+        create_s.run(self.user)
+        time.sleep(5)
+
+        scale_s = self.scenario('scale-service-up')
+        scale_s.run(self.user)
+        time.sleep(3)
+        scale_s.run(self.user)
+        time.sleep(3)
+
+        # Sanity Check
+        project = self.user.api.projects.list().get()
+        service = self.user.api.services.list(project_name=project.name).get()
+        replica_count = self.user.api.services.get_replica_count(service.name,
+                                                                 project.name)
+        self.assertEqual(3, replica_count)
+
+        # Test
+        scale_down_s = self.scenario('scale-service-down')
+        scale_down_s.run(self.user)
+        time.sleep(3)
+
+        # Verify
+        replica_count = self.user.api.services.get_replica_count(service.name,
+                                                                 project.name)
+        self.assertEqual(2, replica_count)

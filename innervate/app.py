@@ -39,7 +39,7 @@ def parse_args(args):
     parser.add_option('-s', '--state', dest='state', action='store_true',
                       help='Log the current state of each configured user\'s'
                            'account')
-    parser.add_option('-c', '--clean', dest='clean', action='store_true',
+    parser.add_option('-l', '--clean', dest='clean', action='store_true',
                       help='Delete all projects for the configured users')
     options, args = parser.parse_args(args)
     return options

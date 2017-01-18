@@ -97,7 +97,7 @@ class ScaleDown(ScaleScenario):
 
     def __init__(self, name, weight, config):
 
-        def test(x): return x > 0
+        def test(x): return x > 1
 
         def change(x): return x - 1
 

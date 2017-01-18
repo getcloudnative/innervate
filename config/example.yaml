@@ -1,4 +1,4 @@
-host: kubernetes
+host: openshift.default.svc.cluster.local
 port: 8443
 users:
   - username: user1

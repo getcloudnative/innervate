@@ -6,6 +6,7 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 import logging.config
+import os
 import yaml
 
 from pykube import KubeConfig
@@ -27,6 +28,9 @@ class InnervateConfig(object):
 
     @property
     def host(self):
+        h = os.environ.get('INNV_HOST', None)
+        if h:
+            return h
         return self._config['host']
 
     @property

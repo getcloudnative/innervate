@@ -6,9 +6,11 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 from optparse import OptionParser
+import os
 import sys
+import urlparse
 
-from innervate.config import InnervateConfig
+from innervate.config import (ENV_CONFIG, InnervateConfig)
 from innervate.engine import InnervateEngine
 
 
@@ -20,8 +22,12 @@ def main(args=None):
     options = parse_args(args)
 
     config = InnervateConfig()
-    # TODO: Make a better reference to this
-    config.load('config/example.yaml')
+
+    config_url = os.environ.get(ENV_CONFIG, None)
+    if not config_url:
+        ex = os.path.join(os.path.abspath('config'), 'example.yaml')
+        config_url = urlparse.urljoin('file:', ex)
+    config.load_url(config_url)
 
     engine = InnervateEngine(config)
     engine.initialize()

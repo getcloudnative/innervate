@@ -7,9 +7,14 @@
 
 import logging.config
 import os
+import urllib2
 import yaml
 
 from pykube import KubeConfig
+
+
+ENV_CONFIG = 'INNV_CONFIG'
+ENV_HOST = 'INNV_HOST'
 
 
 class InnervateConfig(object):
@@ -23,12 +28,17 @@ class InnervateConfig(object):
             self._config = yaml.load(f)
         self._init_logging()
 
+    def load_url(self, url):
+        u = urllib2.urlopen(url)
+        self._config = yaml.load(u.read())
+        self._init_logging()
+
     def _init_logging(self):
         logging.config.dictConfig(self._config['logging'])
 
     @property
     def host(self):
-        h = os.environ.get('INNV_HOST', None)
+        h = os.environ.get(ENV_HOST, None)
         if h:
             return h
         return self._config['host']

@@ -1,0 +1,65 @@
+host: openshift.default.svc.cluster.local
+port: 8443
+users:
+  - username: user1
+    password: user1
+  - username: user2
+    password: user2
+engine:
+  scenario_sleep_range: 5-10  # in seconds
+  log_state_every: 20  # number of scenarios executed
+  auto_clean: false
+scenarios:
+  - name: create-service
+    type: CreateService
+    weight: 1
+    config:
+      images:
+        - name: kubernetes/guestbook
+          ports: 3000:TCP
+      max_services_per_project: 5
+  - name: create-project
+    type: CreateProject
+    weight: 1
+    config:
+      max_projects_per_user: 5
+  - name: scale-service-up
+    type: ScaleUp
+    weight: 3
+    config:
+      max_pods_per_service: 5
+logging:
+  version: 1
+  formatters:
+    basic:
+      format: "%(asctime)s %(levelname)-8s %(message)s"
+    detailed:
+      format: "%(asctime)s %(levelname)-8s %(name)-12s: %(message)s"
+    engine:
+      format: "%(asctime)s: %(message)s"
+      datefmt: "%m/%d/%Y %I:%M:%S"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      stream: ext://sys.stdout
+      formatter: basic
+      level: DEBUG
+    engine-console:
+      class: logging.StreamHandler
+      stream: ext://sys.stdout
+      formatter: engine
+      level: INFO
+    engine-file:
+      class: logging.FileHandler
+      formatter: engine
+      filename: engine.log
+  loggers:
+    innervate:
+      level: INFO
+      handlers:
+        - console
+    innervate_engine:
+      level: INFO
+      handlers:
+        - engine-console
+        - engine-file

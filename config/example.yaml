@@ -1,14 +1,14 @@
 host: openshift.default.svc.cluster.local
 port: 8443
+engine:
+  scenario_sleep_range: 5-20  # in seconds
+  log_state_every: 5  # number of scenarios executed
+  auto_clean: true  # if true, each user account will have all projects deleted on exit
 users:
   - username: user1
     password: user1
   - username: user2
     password: user2
-engine:
-  scenario_sleep_range: 5-20  # in seconds
-  log_state_every: 5  # number of scenarios executed
-  auto_clean: true  # if true, each user account will have all projects deleted on exit
 scenarios:
   - name: create-service
     type: CreateService

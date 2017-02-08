@@ -64,7 +64,7 @@ There are two flags available to the `innv` command:
 # Configuration
 
 The configuration file drives how the Innervate engine will behave. The
-config/example.yaml file can be used as a starting point for customizing its
+`config/example.yaml` file can be used as a starting point for customizing its
 behavior.
 
 ## Engine

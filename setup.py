@@ -12,7 +12,7 @@ from setuptools import setup, find_packages
 
 setup(
         name='innervate',
-        version='0.1.0',
+        version='1.0.1',
         description='User and load simulator for OpenShift',
         license='GPLv2',
 

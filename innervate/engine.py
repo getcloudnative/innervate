@@ -132,7 +132,19 @@ class InnervateEngine(object):
                 LOG.info('Skipping scenario [%s]: %s' % (scenario.name,
                                                          e.message))
                 skipped_scenario_names.append(scenario.name)
+            except Exception:
+                # Something went horribly wrong (likely a bug in
+                # the scenario), so log as much as possible but
+                # don't kill the process
+                msg = 'Error executing scenario [%s] for user [%s]' % \
+                      (scenario.name, user.username)
+                LOG.exception(msg)
 
+                # It might be excessive to skip all further runs of the
+                # scenario (given they will often randomize their data), but
+                # it'll keep the logs more clear in the event that a
+                # particular scenario has issues and needs to be debugged.
+                skipped_scenario_names.append(scenario.name)
             else:
                 break
         else:

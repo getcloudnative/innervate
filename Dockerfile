@@ -7,6 +7,7 @@ RUN mkdir -p ${HOME} && \
             -c "Default Application User" default
 WORKDIR ${HOME}
 
+COPY help.1 /
 COPY config/ ${HOME}/config/
 COPY innervate/ ${HOME}/innervate/
 COPY setup.py ${HOME}
